@@ -7,7 +7,7 @@ const administradorRouter = require('./src/routes/administrador.route');
 
 const db = require('./src/config/db.config');
 
-// Middleware para procesar JSON
+
 app.use(express.json());
 
 
