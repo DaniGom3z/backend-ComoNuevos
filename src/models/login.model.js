@@ -8,32 +8,34 @@ const sequelize = new Sequelize({
     database: process.env.DB_DATABASE
 });
 
-const citaSchema = sequelize.define("citas", {
-  id_citas: {
+const loginSchema = sequelize.define("login", {
+  id_user: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
   },
   nombre: {
-    type: DataTypes.STRING,
+    type:DataTypes.STRING,
     allowNull: false,
   },
-  correo: {
+  correoElectronico: {
     type: DataTypes.STRING,
     allowNull: false,
+    unique: true,
   },
-  dia: {
-      type: DataTypes.DATE,
-      allowNull: false,
+  contraseña: {
+    type: DataTypes.STRING,
+    allowNull: false,
   },
 });
 
+
 sequelize.sync()
     .then(() => {
-        console.log('Modelo de citas sincronizado con la base de datos');
+        console.log('Modelo de login sincronizado con la base de datos');
     })
     .catch((error) => {
         console.error('Error al sincronizar el modelo de citas:', error);
     });
 
-module.exports = citaSchema;
+module.exports = loginSchema;

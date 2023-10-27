@@ -1,12 +1,16 @@
-const express =require("express");
-const usuarioRoute=express.Router();
-const{
-    obtenerCoches,
-    agregarCita,
-}= require("../controllers/usuarios.controller");
+const express = require("express");
+const usuarioRoute = express.Router();
+const {
+  obtenerCoches,
+  agregarCita,
+} = require("../controllers/usuarios.controller");
 
-usuarioRoute.get("/",obtenerCoches);
+usuarioRoute.get("/", (req, res) => {
+  res.send("¡La API está funcionando en ls rutas de usuarios");
+});
 
-usuarioRoute.post("/",agregarCita);
+usuarioRoute.get("/", obtenerCoches);
 
-module.exports=usuarioRoute; 
+usuarioRoute.post("/", agregarCita);
+
+module.exports = usuarioRoute;

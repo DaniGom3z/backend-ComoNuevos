@@ -1,24 +1,30 @@
-const express =require("express");
-const administradorRoute=express.Router();
-const{
-    obtenerCoches,
-    ingresarCoche,
-    actualizarCoche,
-    eliminarCoche,
-    obtenerCita,
-    eliminarCita
-}= require("../controllers/administrador.controller");
+const express = require("express");
+const validar = require('../middlewares/validar');
+const administradorRoute = express.Router();
+const {
+  obtenerAutos,
+  ingresarAuto,
+  actualizarAuto,
+  eliminarAuto,
+  obtenerCitas,
+  eliminarCita,
+} = require("../controllers/administrador.controller");
 
-administradorRoute.get("/",obtenerCoches);
+const {
+  iniciarSesion
+} = require("../controllers/login.controller");
 
-administradorRoute.post("/",ingresarCoche);
 
-administradorRoute.put("/",actualizarCoche);
+administradorRoute.get("/", (req, res) => {
+  res.send("¡La API está funcionando en las rutas de admin!");
+});
 
-administradorRoute.delete("/",eliminarCoche);
+administradorRoute.post("/login", validar, iniciarSesion);
+administradorRoute.get("/autos", obtenerAutos);
+administradorRoute.post("/autos", ingresarAuto);
+administradorRoute.put("/autos/:id", actualizarAuto);
+administradorRoute.delete("/autos/:id", eliminarAuto);
+administradorRoute.get("/citas", obtenerCitas);
+administradorRoute.delete("/citas/:id", eliminarCita);
 
-administradorRoute.get("/",obtenerCita);
-
-administradorRoute.delete("/",eliminarCita);
-
-module.exports=administradorRoute;
+module.exports = administradorRoute;
