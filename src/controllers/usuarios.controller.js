@@ -1,45 +1,39 @@
+const validator = require('validator');
+const Auto = require("../models/auto.model");
+const Cita = require("../models/cita.model");
 
-
-
-const obtenerCoches = (req, res) => {
-  req.getConnection((err, conn) => {
-    if (err) return res.send(err);
-
-    conn.query(
-    //   `PENDIENTE HASTA QUE SE LLENEN LAS TABLAS
-    //   SELECT autos.id_medicamento, medicamentos.NombreMedicina, medicamentos.Descripcion,
-    //   medicamentos.NumeroDeLote, medicamentos.Cantidad, estados.Estado,
-    //   medicamentos.FechaDeExpiracion, medicamentos.Precio, proveedor.Nombre,
-    //   categorias.NombreCategorias
-    //   FROM medicamentos
-    //   INNER JOIN categorias ON medicamentos.id_categorias = categorias.id_categoria
-    //   INNER JOIN estados ON medicamentos.id_estado = estados.id_estado
-    //   INNER JOIN proveedor ON medicamentos.id_proveedores = proveedor.IDproveedor;    
-    //   `,
-      (err, rows) => {
-        if (err) return res.send(err);
-        res.json(rows);
-      }
-    );
-  });
+const obtenerAutos = async (req, res) => {
+  try {
+    const autos = await Auto.findAll();
+    res.json(autos);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
-const agregarCita = (req, res) => {
-  req.getConnection((err, conn) => {
-    if (err) return res.send(err);
+const agregarCita = async (req, res) => {
+  try {
+    const { nombre, correo, dia } = req.body;
 
-    conn.query(
-    //   "PENDIENTE",
-      (err, rows) => {
-        if (err) return res.send(err);
+    if (typeof correo !== "string" || !validator.isEmail(correo)) {
+      return res.status(400).json({ error: "Correo electrónico no válido" });
+    }
 
-        res.json(rows);
-      }
-    );
-  });
+    const citaExistente = await Cita.findOne({ where: { correo } });
+    if (citaExistente) {
+      return res
+        .status(400)
+        .json({ error: "El correo ya está registrado en la tabla de citas" });
+    }
+
+    const nuevaCita = await Cita.create({ nombre, correo, dia });
+    res.json(nuevaCita);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
 module.exports = {
-  obtenerCoches,
+  obtenerAutos,
   agregarCita,
 };

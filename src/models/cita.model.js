@@ -9,7 +9,7 @@ const sequelize = new Sequelize({
 });
 
 const citaSchema = sequelize.define("citas", {
-  id_citas: {
+  id_cita: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,

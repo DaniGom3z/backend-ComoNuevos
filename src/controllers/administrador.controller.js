@@ -57,9 +57,9 @@ const obtenerCitas = async (req, res) => {
 };
 
 const eliminarCita = async (req, res) => {
-  const { id } = req.params;
+  const { id_cita } = req.params;
   try {
-    const eliminado = await Cita.destroy({ where: { id } });
+    const eliminado = await Cita.destroy({ where: { id_cita } });
     if (eliminado) {
       res.json({ mensaje: 'Cita eliminada exitosamente' });
     } else {
@@ -76,5 +76,5 @@ module.exports = {
   actualizarAuto,
   eliminarAuto,
   obtenerCitas,
-  eliminarCita
+  eliminarCita,
 };

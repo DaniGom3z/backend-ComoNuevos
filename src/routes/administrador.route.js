@@ -1,6 +1,8 @@
 const express = require("express");
-const validar = require('../middlewares/validar');
 const administradorRoute = express.Router();
+const protegerRutas = require('../middlewares/protegerRutas');
+const { crearUsuario } = require("../controllers/crearUsuario.controller");
+const { iniciarSesion} = require("../controllers/login.controller");
 const {
   obtenerAutos,
   ingresarAuto,
@@ -10,21 +12,14 @@ const {
   eliminarCita,
 } = require("../controllers/administrador.controller");
 
-const {
-  iniciarSesion
-} = require("../controllers/login.controller");
 
-
-administradorRoute.get("/", (req, res) => {
-  res.send("¡La API está funcionando en las rutas de admin!");
-});
-
-administradorRoute.post("/login", validar, iniciarSesion);
-administradorRoute.get("/autos", obtenerAutos);
-administradorRoute.post("/autos", ingresarAuto);
-administradorRoute.put("/autos/:id", actualizarAuto);
-administradorRoute.delete("/autos/:id", eliminarAuto);
-administradorRoute.get("/citas", obtenerCitas);
-administradorRoute.delete("/citas/:id", eliminarCita);
+administradorRoute.post("/registro", crearUsuario);
+administradorRoute.post("/iniciar", iniciarSesion);
+administradorRoute.get("/autos", protegerRutas, obtenerAutos);
+administradorRoute.post("/autos", protegerRutas, ingresarAuto);
+administradorRoute.put("/autos/:id", protegerRutas, actualizarAuto);
+administradorRoute.delete("/autos/:id", protegerRutas, eliminarAuto);
+administradorRoute.get("/citas", protegerRutas, obtenerCitas);
+administradorRoute.delete("/citas/:id_cita", protegerRutas, eliminarCita);
 
 module.exports = administradorRoute;

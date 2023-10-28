@@ -1,16 +1,12 @@
 const express = require("express");
 const usuarioRoute = express.Router();
 const {
-  obtenerCoches,
+  obtenerAutos,
   agregarCita,
 } = require("../controllers/usuarios.controller");
 
-usuarioRoute.get("/", (req, res) => {
-  res.send("¡La API está funcionando en ls rutas de usuarios");
-});
+usuarioRoute.get("/autos", obtenerAutos);
 
-usuarioRoute.get("/", obtenerCoches);
-
-usuarioRoute.post("/", agregarCita);
+usuarioRoute.post("/agendarcita", agregarCita);
 
 module.exports = usuarioRoute;

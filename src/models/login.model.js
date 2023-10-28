@@ -15,10 +15,10 @@ const loginSchema = sequelize.define("login", {
     autoIncrement: true,
   },
   nombre: {
-    type:DataTypes.STRING,
+    type: DataTypes.STRING,
     allowNull: false,
   },
-  correoElectronico: {
+  email: {
     type: DataTypes.STRING,
     allowNull: false,
     unique: true,
@@ -29,13 +29,12 @@ const loginSchema = sequelize.define("login", {
   },
 });
 
-
 sequelize.sync()
-    .then(() => {
-        console.log('Modelo de login sincronizado con la base de datos');
-    })
-    .catch((error) => {
-        console.error('Error al sincronizar el modelo de citas:', error);
-    });
+  .then(() => {
+    console.log('Modelo de login sincronizado con la base de datos');
+  })
+  .catch((error) => {
+    console.error('Error al sincronizar el modelo de login:', error);
+});
 
 module.exports = loginSchema;
