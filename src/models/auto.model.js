@@ -1,4 +1,5 @@
 const { Sequelize, DataTypes } = require('sequelize');
+const loginSchema =require ('../models/login.model');
 
 const sequelize = new Sequelize({
     dialect: 'mysql',
@@ -58,9 +59,6 @@ const autoSchema = sequelize.define("autos", {
     id_puertas: {
         type: DataTypes.INTEGER,
     },
-    batalla: {
-        type: DataTypes.DECIMAL(10, 0),
-    },
     largo: {
         type: DataTypes.DECIMAL(10, 0),
     },
@@ -81,8 +79,28 @@ const autoSchema = sequelize.define("autos", {
     },
     id_color: {
         type: DataTypes.INTEGER,
-    }
+    },
+    created_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    updated_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    deleted_at: {
+        type: DataTypes.DATE,
+        allowNull: true,
+    },
+    deleted_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
 });
+
+autoSchema.belongsTo(loginSchema, { foreignKey: 'created_by', as: 'createdByUser' });
+autoSchema.belongsTo(loginSchema, { foreignKey: 'updated_by', as: 'updatedByUser' });
+autoSchema.belongsTo(loginSchema, { foreignKey: 'deleted_by', as: 'deletedByUser' });
 
 // Sincroniza el modelo con la base de datos (esto crea la tabla si no existe)
 sequelize.sync()

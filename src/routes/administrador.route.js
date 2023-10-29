@@ -10,15 +10,17 @@ const {
   eliminarAuto,
   obtenerCitas,
   eliminarCita,
+  recuperarAuto
 } = require("../controllers/administrador.controller");
 
-
+//RUTAS PROBABLEMENTE TERMINADAS
 administradorRoute.post("/registro", crearUsuario);
 administradorRoute.post("/iniciar", iniciarSesion);
 administradorRoute.get("/autos", protegerRutas, obtenerAutos);
-administradorRoute.post("/autos", protegerRutas, ingresarAuto);
-administradorRoute.put("/autos/:id", protegerRutas, actualizarAuto);
-administradorRoute.delete("/autos/:id", protegerRutas, eliminarAuto);
+administradorRoute.post("/autos",protegerRutas, ingresarAuto);
+administradorRoute.put("/autos/:id_auto", protegerRutas, actualizarAuto);
+administradorRoute.put("/autos/recuperar/:id_auto", protegerRutas, recuperarAuto);
+administradorRoute.delete("/autos/:id_auto", protegerRutas, eliminarAuto);
 administradorRoute.get("/citas", protegerRutas, obtenerCitas);
 administradorRoute.delete("/citas/:id_cita", protegerRutas, eliminarCita);
 

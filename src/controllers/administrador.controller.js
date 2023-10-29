@@ -1,5 +1,6 @@
 const Auto = require('../models/auto.model');
 const Cita = require('../models/cita.model');
+const { Op } = require("sequelize");
 
 const obtenerAutos = async (req, res) => {
   try {
@@ -12,6 +13,8 @@ const obtenerAutos = async (req, res) => {
 
 const ingresarAuto = async (req, res) => {
   try {
+    const id_user = req.id_user;
+    req.body.created_by = id_user;
     const nuevoAuto = await Auto.create(req.body);
     res.json(nuevoAuto);
   } catch (err) {
@@ -19,10 +22,13 @@ const ingresarAuto = async (req, res) => {
   }
 };
 
+
 const actualizarAuto = async (req, res) => {
-  const { id } = req.params;
+  const { id_auto } = req.params;
   try {
-    const [actualizado] = await Auto.update(req.body, { where: { id } });
+    const id_user = req.id_user;
+    req.body.updated_by = id_user;
+    const [actualizado] = await Auto.update(req.body, { where: { id_auto } });
     if (actualizado) {
       res.json({ mensaje: 'Auto actualizado exitosamente' });
     } else {
@@ -33,19 +39,48 @@ const actualizarAuto = async (req, res) => {
   }
 };
 
+
 const eliminarAuto = async (req, res) => {
-  const { id } = req.params;
+  const { id_auto } = req.params;
+  const { eliminarFisicamente } = req.body;
+
   try {
-    const eliminado = await Auto.destroy({ where: { id } });
-    if (eliminado) {
-      res.json({ mensaje: 'Auto eliminado exitosamente' });
+    if (eliminarFisicamente) {
+      // Eliminación física
+      const eliminado = await Auto.destroy({ where: { id_auto } });
+
+      if (eliminado) {
+        res.json({ mensaje: 'Auto eliminado físicamente exitosamente' });
+      } else {
+        res.status(404).json({ error: 'Auto no encontrado' });
+      }
     } else {
-      res.status(404).json({ error: 'Auto no encontrado' });
+      // Eliminación lógica
+      // Supongamos que tienes el ID del administrador en la variable administradorId
+      const id_user = req.id_user;
+      req.body.deleted_by = id_user;
+      
+      const [actualizado] = await Auto.update(
+        {
+          deleted_at: new Date(),
+          deleted_by: req.body.deleted_by,
+        },
+        {
+          where: { id_auto, deleted_at: null }, // Asegúrate de que el registro no esté previamente eliminado
+        }
+      );
+
+      if (actualizado) {
+        res.json({ mensaje: 'Auto eliminado lógicamente exitosamente' });
+      } else {
+        res.status(404).json({ error: 'Auto no encontrado' });
+      }
     }
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 const obtenerCitas = async (req, res) => {
   try {
@@ -58,17 +93,71 @@ const obtenerCitas = async (req, res) => {
 
 const eliminarCita = async (req, res) => {
   const { id_cita } = req.params;
+  const { eliminarFisicamente } = req.body;
+
   try {
-    const eliminado = await Cita.destroy({ where: { id_cita } });
-    if (eliminado) {
-      res.json({ mensaje: 'Cita eliminada exitosamente' });
+    if (eliminarFisicamente) {
+      // Eliminación física
+      const eliminado = await Cita.destroy({ where: { id_cita } });
+
+      if (eliminado) {
+        res.json({ mensaje: 'Cita eliminada físicamente exitosamente' });
+      } else {
+        res.status(404).json({ error: 'Cita no encontrada' });
+      }
     } else {
-      res.status(404).json({ error: 'Cita no encontrada' });
+      // Eliminación lógica
+      // Supongamos que tienes el ID del administrador en la variable administradorId
+     
+      const id_user = req.id_user;
+      req.body.deleted_by = id_user; // Asigna el ID del administrador al campo 'deleted_by'
+
+      const [actualizado] = await Cita.update(
+        {
+          deleted_at: new Date(),
+          deleted_by: req.body.deleted_by,
+        },
+        {
+          where: { id_cita, deleted_at: null }, // Asegúrate de que la cita no esté previamente eliminada
+        }
+      );
+
+      if (actualizado) {
+        res.json({ mensaje: 'Cita eliminada lógicamente exitosamente' });
+      } else {
+        res.status(404).json({ error: 'Cita no encontrada' });
+      }
     }
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
+
+const recuperarAuto = async (req, res) => {
+  const { id_auto } = req.params;
+
+  try {
+    const [actualizado] = await Auto.update(
+      {
+        deleted_at: null,
+      },
+      {
+        where: { id_auto, deleted_at: { [Op.ne]: null } }, // Asegúrate de que el registro esté marcado como eliminado
+      }
+    );
+
+    if (actualizado) {
+      res.json({ mensaje: 'Auto recuperado exitosamente' });
+    } else {
+      res.status(404).json({ error: 'Auto no encontrado o no eliminado previamente' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+
 
 module.exports = {
   obtenerAutos,
@@ -77,4 +166,5 @@ module.exports = {
   eliminarAuto,
   obtenerCitas,
   eliminarCita,
+  recuperarAuto
 };

@@ -1,32 +1,33 @@
-const bcrypt = require('bcrypt');
-const login = require('../models/login.model'); 
+const jwt = require("jsonwebtoken");
 
-const protegerRuta = async (req, res, next) => {
-  const { email, contraseña } = req.body;
+const protegerRutas = (req, res, next) => {
+  const token = req.header("Authorization");
+
+  if (!token) {
+    return res.status(401).json({ mensaje: "Acceso no autorizado, token no proporcionado" });
+  }
+
   try {
-    const usuarioAdmin = await login.findOne({
-      where: {
-        email: email,
+    // Verifica el token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET, {
+      // El token está en base64
+      verifyOptions: {
+        algorithms: ["HS256"],
+        format: "compact",
       },
     });
+    req.user = decoded; // Almacena la información del usuario en req.user para su uso posterior
+    req.id_user = req.user.id_user; // Agrega id_user al objeto req
 
-    if (!usuarioAdmin) {
-      return res.status(403).json({ message: 'Credenciales inválidas' });
+    // Comprueba si el id_user está presente en el token
+    if (!req.id_user) {
+      return res.status(400).json({ mensaje: "El token no contiene el id_user" });
     }
-    
-    const contrasenaValida = await bcrypt.compare(contraseña, usuarioAdmin.contraseña);
-    
-    if (!contrasenaValida) {
-      return res.status(403).json({ message: 'Credenciales inválidas' });
-    }
-    
 
-    req.user = usuarioAdmin; 
     next();
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Error interno del servidor' });
+  } catch (error) {
+    res.status(403).json({ mensaje: "Token inválido" });
   }
 };
 
-module.exports = protegerRuta;
+module.exports = protegerRutas;
