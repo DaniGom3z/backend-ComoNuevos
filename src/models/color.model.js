@@ -21,6 +21,7 @@ const colorSchema = sequelize.define("colores", {
 }, {
   timestamps: false, // Desactiva la creación automática de campos createdAt y updatedAt
 });
+
 sequelize.sync()
   .then(() => {
     console.log('Modelo de color sincronizado con la base de datos');

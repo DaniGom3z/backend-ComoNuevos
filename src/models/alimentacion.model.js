@@ -21,6 +21,7 @@ const alimentacionSchema = sequelize.define("alimentaciones", {
 }, {
   timestamps: false, // Desactiva la creación automática de campos createdAt y updatedAt
 });
+
 sequelize.sync()
   .then(() => {
     console.log('Modelo de la alimentacion sincronizado con la base de datos');

@@ -21,6 +21,7 @@ const puertaSchema = sequelize.define("puertas", {
 }, {
   timestamps: false, // Desactiva la creación automática de campos createdAt y updatedAt
 });
+
 sequelize.sync()
   .then(() => {
     console.log('Modelo de puertas sincronizado con la base de datos');

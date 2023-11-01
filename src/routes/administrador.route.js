@@ -6,6 +6,7 @@ const { iniciarSesion} = require("../controllers/login.controller");
 const { cerrarSesion } = require("../controllers/cerrarSesion.controller")
 const {
   obtenerAutos,
+  obtenerAuto,
   ingresarAuto,
   actualizarAuto,
   eliminarAuto,
@@ -14,11 +15,10 @@ const {
   recuperarAuto
 } = require("../controllers/administrador.controller");
 
-//RUTAS PROBABLEMENTE TERMINADAS
 administradorRoute.post("/registro", crearUsuario);
 administradorRoute.post("/iniciar", iniciarSesion);
-
 administradorRoute.get("/autos", protegerRutas, obtenerAutos);
+administradorRoute.get("/autos/:id_auto", protegerRutas, obtenerAuto);
 administradorRoute.post("/autos",protegerRutas, ingresarAuto);
 administradorRoute.put("/autos/:id_auto", protegerRutas, actualizarAuto);
 administradorRoute.put("/autos/recuperar/:id_auto", protegerRutas, recuperarAuto);

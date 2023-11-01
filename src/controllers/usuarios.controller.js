@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer');
 const validator = require("validator");
+require("dotenv").config();
 const Auto = require('../models/auto.model');
 const Cita = require('../models/cita.model');
 const Motor= require('../models/motor.model');
@@ -15,6 +16,19 @@ const Valvula=require('../models/valvula.model');
 const obtenerAutos = async (req, res) => {
   try {
     const autos = await Auto.findAll({
+      attributes: ['id_auto','nombre', 'precio'], // Seleccionar solo los atributos deseados
+    });
+
+    res.json(autos);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+const obtenerAuto = async (req, res) => {
+  const { id_auto } = req.params;
+  try {
+    const auto = await Auto.findByPk(id_auto, {
       include: [
         {
           model: Motor,
@@ -63,11 +77,9 @@ const obtenerAutos = async (req, res) => {
         },
       ],
     });
-    
 
-    // Mapea los resultados para eliminar el campo id_motor y dejar solo el campo motor
-    const autosSinId = autos.map((auto) => {
-      return {
+    if (auto) {
+      const autoSinId = {
         id_auto: auto.id_auto,
         nombre: auto.nombre,
         precio: auto.precio,
@@ -91,14 +103,14 @@ const obtenerAutos = async (req, res) => {
         consumo: auto.consumo,
         id_imagen: auto.id_imagen,
       };
-    });
-
-    res.json(autosSinId);
+      res.json(autoSinId);
+    } else {
+      res.status(404).json({ message: 'Auto no encontrado' });
+    }
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
-
 const agregarCita = async (req, res) => {
   try {
     const { nombre, correo, dia } = req.body;
@@ -116,24 +128,23 @@ const agregarCita = async (req, res) => {
 
     const nuevaCita = await Cita.create({ nombre, correo, dia });
 
-    // Configura el servicio de correo
+
     const transporter = nodemailer.createTransport({
-      service: 'Gmail', // Cambia esto por tu proveedor de correo
+      service: 'Gmail', 
       auth: {
-        user: 'comonuevoschiapas@gmail.com', // Cambia esto por tu correo
-        pass: 'xvhc uqqg gbtj ursk', // Cambia esto por tu contraseña
+        user: process.env.EMAIL_USER, 
+        pass: process.env.EMAIL_PASS,
       },
     });
 
-    // Opciones para enviar el correo
+  
     const mailOptions = {
-      from: 'comonuevoschiapas@gmail.com', // Remitente
-      to: correo, // Destinatario (correo del usuario)
+      from: process.env.EMAIL_USER, 
+      to: correo, 
       subject: 'Confirmación de cita',
       text:'Hola ' + nombre + ',\nTu cita ha sido confirmada con éxito. Gracias por agendar con nosotros el día ' + dia + '.\nTe estaremos esperando con mucho gusto.',
     };
 
-    // Envía el correo electrónico
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.log('Error al enviar el correo:', error);
@@ -150,5 +161,6 @@ const agregarCita = async (req, res) => {
 
 module.exports = {
   obtenerAutos,
+  obtenerAuto,
   agregarCita,
 };

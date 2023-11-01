@@ -123,7 +123,6 @@ autoSchema.belongsTo(traccionSchema, { foreignKey: 'id_traccion', as: 'traccion'
 autoSchema.belongsTo(transmicionSchema, { foreignKey: 'id_transmicion', as: 'transmicion' });
 autoSchema.belongsTo(valvulaSchema, { foreignKey: 'id_valvula', as: 'valvula' });
 
-// Sincroniza el modelo con la base de datos (esto crea la tabla si no existe)
 sequelize.sync()
     .then(() => {
         console.log('Modelo de autos sincronizado con la base de datos');

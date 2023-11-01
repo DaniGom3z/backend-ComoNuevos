@@ -15,6 +15,18 @@ const { Op } = require("sequelize");
 const obtenerAutos = async (req, res) => {
   try {
     const autos = await Auto.findAll({
+      attributes: ['id_auto','nombre', 'precio'], 
+    });
+
+    res.json(autos);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+}};
+
+const obtenerAuto = async (req, res) => {
+  const { id_auto } = req.params;
+  try {
+    const auto = await Auto.findByPk(id_auto, {
       include: [
         {
           model: Motor,
@@ -63,11 +75,9 @@ const obtenerAutos = async (req, res) => {
         },
       ],
     });
-    
 
-    // Mapea los resultados para eliminar el campo id_motor y dejar solo el campo motor
-    const autosSinId = autos.map((auto) => {
-      return {
+    if (auto) {
+      const autoSinId = {
         id_auto: auto.id_auto,
         nombre: auto.nombre,
         precio: auto.precio,
@@ -91,9 +101,10 @@ const obtenerAutos = async (req, res) => {
         consumo: auto.consumo,
         id_imagen: auto.id_imagen,
       };
-    });
-
-    res.json(autosSinId);
+      res.json(autoSinId);
+    } else {
+      res.status(404).json({ message: 'Auto no encontrado' });
+    }
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -113,7 +124,7 @@ const ingresarAuto = async (req, res) => {
   try {
     const id_user = req.id_user;
 
-    const motorName = req.body.motor;
+    const motores = req.body.motor;
     const cantidadCilindros = req.body.cilindros;
     const valvulaPorCilindro = req.body.valvulaPorCilindro;
     const alimentacion = req.body.alimentacion;
@@ -123,7 +134,7 @@ const ingresarAuto = async (req, res) => {
     const puerta = req.body.puertas;
     const colores = req.body.color;
 
-    const motor = await verificarAtributo(Motor, 'motor', motorName, req, res);
+    const motor = await verificarAtributo(Motor, 'motor', motores, req, res);
     if (!motor) return;
 
     const cilindros = await verificarAtributo(Cilindros, 'cilindros', cantidadCilindros, req, res);
@@ -162,7 +173,6 @@ const ingresarAuto = async (req, res) => {
 
     req.body.created_by = id_user;
 
-    // Resto del código para crear el auto
     const nuevoAuto = await Auto.create(req.body);
     res.json(nuevoAuto);
   } catch (err) {
@@ -241,7 +251,6 @@ const eliminarAuto = async (req, res) => {
 
   try {
     if (eliminarFisicamente) {
-      // Eliminación física
       const eliminado = await Auto.destroy({ where: { id_auto } });
 
       if (eliminado) {
@@ -250,8 +259,6 @@ const eliminarAuto = async (req, res) => {
         res.status(404).json({ error: 'Auto no encontrado' });
       }
     } else {
-      // Eliminación lógica
-      // Supongamos que tienes el ID del administrador en la variable administradorId
       const id_user = req.id_user;
       req.body.deleted_by = id_user;
       
@@ -261,7 +268,7 @@ const eliminarAuto = async (req, res) => {
           deleted_by: req.body.deleted_by,
         },
         {
-          where: { id_auto, deleted_at: null }, // Asegúrate de que el registro no esté previamente eliminado
+          where: { id_auto, deleted_at: null },
         }
       );
 
@@ -301,7 +308,7 @@ const eliminarCita = async (req, res) => {
 
   try {
     if (eliminarFisicamente) {
-      // Eliminación física
+
       const eliminado = await Cita.destroy({ where: { id_cita } });
 
       if (eliminado) {
@@ -310,11 +317,9 @@ const eliminarCita = async (req, res) => {
         res.status(404).json({ error: 'Cita no encontrada' });
       }
     } else {
-      // Eliminación lógica
-      // Supongamos que tienes el ID del administrador en la variable administradorId
-     
+
       const id_user = req.id_user;
-      req.body.deleted_by = id_user; // Asigna el ID del administrador al campo 'deleted_by'
+      req.body.deleted_by = id_user; 
 
       const [actualizado] = await Cita.update(
         {
@@ -322,7 +327,7 @@ const eliminarCita = async (req, res) => {
           deleted_by: req.body.deleted_by,
         },
         {
-          where: { id_cita, deleted_at: null }, // Asegúrate de que la cita no esté previamente eliminada
+          where: { id_cita, deleted_at: null }, 
         }
       );
 
@@ -346,7 +351,7 @@ const recuperarAuto = async (req, res) => {
         deleted_at: null,
       },
       {
-        where: { id_auto, deleted_at: { [Op.ne]: null } }, // Asegúrate de que el registro esté marcado como eliminado
+        where: { id_auto, deleted_at: { [Op.ne]: null } }, 
       }
     );
 
@@ -362,6 +367,7 @@ const recuperarAuto = async (req, res) => {
 
 module.exports = {
   obtenerAutos,
+  obtenerAuto,
   ingresarAuto,
   actualizarAuto,
   eliminarAuto,
