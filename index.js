@@ -1,4 +1,4 @@
-require("dotenv").config(); 
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const usuariosRouter = require("./src/routes/usuarios.route");
@@ -14,3 +14,4 @@ app.use("/usuarios", usuariosRouter);
 app.listen(process.env.PORT, () => {
   console.log(`API escuchando en el puerto ${process.env.PORT}`);
 });
+  

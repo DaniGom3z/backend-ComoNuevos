@@ -17,6 +17,7 @@ const {
 //RUTAS PROBABLEMENTE TERMINADAS
 administradorRoute.post("/registro", crearUsuario);
 administradorRoute.post("/iniciar", iniciarSesion);
+
 administradorRoute.get("/autos", protegerRutas, obtenerAutos);
 administradorRoute.post("/autos",protegerRutas, ingresarAuto);
 administradorRoute.put("/autos/:id_auto", protegerRutas, actualizarAuto);

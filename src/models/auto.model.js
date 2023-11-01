@@ -1,5 +1,14 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const loginSchema =require ('../models/login.model');
+const motorSchema =require ('../models/motor.model');
+const cilindroSchema = require('./cilindros.model');
+const alimentacionSchema = require('./alimentacion.model');
+const colorSchema = require('./color.model');
+const puertaSchema = require('./puerta.model');
+const tipoSchema = require('./tipo.model');
+const traccionSchema = require('./traccion.model');
+const transmicionSchema = require('./transmicion.model');
+const valvulaSchema = require('./valvula.model');
 
 const sequelize = new Sequelize({
     dialect: 'mysql',
@@ -53,6 +62,9 @@ const autoSchema = sequelize.define("autos", {
     velocidadMaxima: {
         type: DataTypes.STRING(25),
     },
+    velocidades: {
+        type: DataTypes.INTEGER,
+    },
     id_tipo: {
         type: DataTypes.INTEGER,
     },
@@ -101,6 +113,15 @@ const autoSchema = sequelize.define("autos", {
 autoSchema.belongsTo(loginSchema, { foreignKey: 'created_by', as: 'createdByUser' });
 autoSchema.belongsTo(loginSchema, { foreignKey: 'updated_by', as: 'updatedByUser' });
 autoSchema.belongsTo(loginSchema, { foreignKey: 'deleted_by', as: 'deletedByUser' });
+autoSchema.belongsTo(motorSchema, { foreignKey: 'id_motor', as: 'motor' });
+autoSchema.belongsTo(cilindroSchema, { foreignKey: 'id_cilindros', as: 'cilindros' });
+autoSchema.belongsTo(alimentacionSchema, { foreignKey: 'id_alimentacion', as: 'alimentacion' });
+autoSchema.belongsTo(colorSchema, { foreignKey: 'id_color', as: 'color' });
+autoSchema.belongsTo(puertaSchema, { foreignKey: 'id_puertas', as: 'puertas' });
+autoSchema.belongsTo(tipoSchema, { foreignKey: 'id_tipo', as: 'tipo' });
+autoSchema.belongsTo(traccionSchema, { foreignKey: 'id_traccion', as: 'traccion' });
+autoSchema.belongsTo(transmicionSchema, { foreignKey: 'id_transmicion', as: 'transmicion' });
+autoSchema.belongsTo(valvulaSchema, { foreignKey: 'id_valvula', as: 'valvula' });
 
 // Sincroniza el modelo con la base de datos (esto crea la tabla si no existe)
 sequelize.sync()
@@ -110,5 +131,4 @@ sequelize.sync()
     .catch((error) => {
         console.error('Error al sincronizar el modelo de autos:', error);
     });
-
 module.exports = autoSchema;
