@@ -7,7 +7,7 @@ const {
 } = require("../controllers/usuarios.controller");
 
 usuarioRoute.get("/autos", obtenerAutos);
-usuarioRoute.get("/autos/:id_auto", obtenerAutos);
+usuarioRoute.get("/autos/:id_auto", obtenerAuto);
 usuarioRoute.post("/agendarcita", agregarCita);
 
 module.exports = usuarioRoute;
