@@ -4,9 +4,11 @@ const {
   obtenerAutos,
   obtenerAuto,
   agregarCita,
+  obtenerAutosPorTipo,
 } = require("../controllers/usuarios.controller");
 
 usuarioRoute.get("/autos", obtenerAutos);
+usuarioRoute.get("/autos/:tipo", obtenerAutosPorTipo);
 usuarioRoute.get("/autos/:id_auto", obtenerAuto);
 usuarioRoute.post("/agendarcita", agregarCita);
 

@@ -14,14 +14,48 @@ const { Op } = require("sequelize");
 
 const obtenerAutos = async (req, res) => {
   try {
+    const page = req.query.page || 1; 
+    const perPage = parseInt(req.query.perPage) || 10; 
     const autos = await Auto.findAll({
-      attributes: ['id_auto','nombre', 'precio'], 
+      attributes: ['id_auto', 'nombre', 'precio'],
+      limit: perPage, 
+      offset: (page - 1) * perPage, 
     });
 
     res.json(autos);
   } catch (err) {
     res.status(500).json({ error: err.message });
-}};
+  }
+};
+
+
+const obtenerAutosPorTipo = async (req, res) => {
+  try {
+    const tipoDeAuto = req.params.tipo;
+
+
+    const tipoAuto = await Tipos.findOne({ where: { tipoDeAuto } });
+
+    if (tipoAuto) {
+      const id_tipo = tipoAuto.id_tipo;
+      const page = req.query.page || 1;
+      const perPage = parseInt(req.query.perPage) || 10;
+
+      const autos = await Auto.findAll({
+        where: { id_tipo },
+        attributes: ['id_auto', 'nombre', 'precio'],
+        limit: perPage,
+        offset: (page - 1) * perPage,
+      });
+
+      res.json(autos);
+    } else {
+      res.status(404).json({ error: "Tipo de auto no encontrado" });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
 const obtenerAuto = async (req, res) => {
   const { id_auto } = req.params;
@@ -244,7 +278,6 @@ const actualizarAuto = async (req, res) => {
   }
 };
 
-
 const eliminarAuto = async (req, res) => {
   const { id_auto } = req.params;
   const { eliminarFisicamente } = req.body;
@@ -373,5 +406,6 @@ module.exports = {
   eliminarAuto,
   obtenerCitas,
   eliminarCita,
-  recuperarAuto
+  recuperarAuto,
+  obtenerAutosPorTipo
 };

@@ -15,11 +15,43 @@ const Valvula=require('../models/valvula.model');
 
 const obtenerAutos = async (req, res) => {
   try {
+    const page = req.query.page || 1; 
+    const perPage = parseInt(req.query.perPage) || 10; 
     const autos = await Auto.findAll({
-      attributes: ['id_auto','nombre', 'precio'], // Seleccionar solo los atributos deseados
+      attributes: ['id_auto', 'nombre', 'precio'],
+      limit: perPage, 
+      offset: (page - 1) * perPage, 
     });
 
     res.json(autos);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+const obtenerAutosPorTipo = async (req, res) => {
+  try {
+    const tipoDeAuto = req.params.tipo;
+
+
+    const tipoAuto = await Tipos.findOne({ where: { tipoDeAuto } });
+
+    if (tipoAuto) {
+      const id_tipo = tipoAuto.id_tipo;
+      const page = req.query.page || 1;
+      const perPage = parseInt(req.query.perPage) || 10;
+
+      const autos = await Auto.findAll({
+        where: { id_tipo },
+        attributes: ['id_auto', 'nombre', 'precio'],
+        limit: perPage,
+        offset: (page - 1) * perPage,
+      });
+
+      res.json(autos);
+    } else {
+      res.status(404).json({ error: "Tipo de auto no encontrado" });
+    }
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -111,6 +143,7 @@ const obtenerAuto = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 const agregarCita = async (req, res) => {
   try {
     const { nombre, correo, dia } = req.body;
@@ -142,7 +175,7 @@ const agregarCita = async (req, res) => {
       from: process.env.EMAIL_USER, 
       to: correo, 
       subject: 'Confirmación de cita',
-      text:'Hola ' + nombre + ',\nTu cita ha sido confirmada con éxito. Gracias por agendar con nosotros el día ' + dia + '.\nTe estaremos esperando con mucho gusto.',
+      text:'Hola ' + nombre + '\n\nTu cita ha sido confirmada con éxito.'+' \nGracias por agendar con nosotros en la fecha: \n ' + dia + '.\n\nTe estaremos esperando con mucho gusto.',
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
@@ -161,6 +194,7 @@ const agregarCita = async (req, res) => {
 
 module.exports = {
   obtenerAutos,
+  obtenerAutosPorTipo,
   obtenerAuto,
   agregarCita,
 };

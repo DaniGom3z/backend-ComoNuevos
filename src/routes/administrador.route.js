@@ -14,10 +14,12 @@ const {
   eliminarCita,
   recuperarAuto
 } = require("../controllers/administrador.controller");
+const { obtenerAutosPorTipo } = require("../controllers/usuarios.controller");
 
 administradorRoute.post("/registro", crearUsuario);
 administradorRoute.post("/iniciar", iniciarSesion);
 administradorRoute.get("/autos", protegerRutas, obtenerAutos);
+administradorRoute.get("/autos/:tipo", protegerRutas, obtenerAutosPorTipo);
 administradorRoute.get("/autos/:id_auto", protegerRutas, obtenerAuto);
 administradorRoute.post("/autos",protegerRutas, ingresarAuto);
 administradorRoute.put("/autos/:id_auto", protegerRutas, actualizarAuto);
