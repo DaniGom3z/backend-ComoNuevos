@@ -130,7 +130,7 @@ const obtenerAuto = async (req, res) => {
         velocidadMaxima: auto.velocidadMaxima,
         largo: auto.largo,
         alto: auto.alto,
-        pesoDeRemolque: auto.pesoDeRemolque,
+        peso: auto.peso,
         capacidadDelTanque: auto.capacidadDelTanque,
         consumo: auto.consumo,
         id_imagen: auto.id_imagen,

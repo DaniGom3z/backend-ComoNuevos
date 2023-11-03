@@ -77,7 +77,7 @@ const autoSchema = sequelize.define("autos", {
     alto: {
         type: DataTypes.DECIMAL(10, 0),
     },
-    pesoDeRemolque: {
+    peso: {
         type: DataTypes.INTEGER,
     },
     capacidadDelTanque: {
