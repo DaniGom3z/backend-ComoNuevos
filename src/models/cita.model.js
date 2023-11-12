@@ -1,57 +1,23 @@
-const { Sequelize, DataTypes } = require("sequelize");
-const loginSchema = require('../models/login.model')
+const mysql = require('mysql2');
 
-const sequelize = new Sequelize({
-  dialect: "mysql",
-  host: process.env.DB_HOST,
-  username: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
-});
+const createCitasTable = async (connection) => {
+  try {
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS citas (
+        id_cita INT AUTO_INCREMENT PRIMARY KEY,
+        nombre VARCHAR(255) NOT NULL,
+        correo VARCHAR(255) NOT NULL,
+        dia DATE NOT NULL,
+        deleted_at DATETIME DEFAULT NULL,
+        deleted_by INT DEFAULT NULL
+      )
+    `);
+    console.log('Tabla de citas creada o ya existente');
+  } catch (error) {
+    console.error('Error al crear la tabla de citas:', error);
+  }
+};
 
-const citaSchema = sequelize.define("citas", {
-  id_cita: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
-  nombre: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  correo: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  dia: {
-    type: DataTypes.DATE,
-    allowNull: false,
-  },
-  deleted_at: {
-    type: DataTypes.DATE,
-    allowNull: true,
-    defaultValue: null,
-  },
-  deleted_by: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
-    defaultValue: null,
-  },
-}, {
-  paranoid: true, // Esto es correcto
-  deletedAt: 'deleted_at', // Especifica el nombre de la columna para deletedAt
-  deletedBy: 'deleted_by',
-});
-
-citaSchema.belongsTo(loginSchema, { foreignKey: 'deleted_by', as: 'deletedByUser' });
-
-sequelize
-  .sync()
-  .then(() => {
-    console.log("Modelo de citas sincronizado con la base de datos");
-  })
-  .catch((error) => {
-    console.error("Error al sincronizar el modelo de citas:", error);
-  });
-
-module.exports = citaSchema;
+module.exports = {
+  createCitasTable
+};

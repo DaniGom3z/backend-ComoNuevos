@@ -1,20 +1,25 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const Login = require("../models/login.model");
+const connection = require("../config/db.config");
 
 const iniciarSesion = async (req, res) => {
-  const { id_user, email, contraseña } = req.body;
+  const { email, contraseña } = req.body;
 
   if (!email || typeof email !== "string") {
     return res.status(400).json({ error: "Correo electrónico no válido" });
   }
 
   try {
-    const usuario = await Login.findOne({ where: { email } });
+    const [rows] = await connection.query(
+      "SELECT * FROM login WHERE email = ?",
+      [email]
+    );
 
-    if (!usuario) {
+    if (rows.length === 0) {
       return res.status(404).json({ error: "El usuario no existe" });
     }
+
+    const usuario = rows[0];
 
     const contraseñaValida = await bcrypt.compare(
       contraseña,

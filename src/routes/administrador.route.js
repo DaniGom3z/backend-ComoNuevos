@@ -3,30 +3,38 @@ const administradorRoute = express.Router();
 const protegerRutas = require('../middlewares/protegerRutas');
 const { crearUsuario } = require("../controllers/crearUsuario.controller");
 const { iniciarSesion} = require("../controllers/login.controller");
-const { cerrarSesion } = require("../controllers/cerrarSesion.controller")
+const { cerrarSesion } = require("../controllers/cerrarSesion.controller");
+const images =require('../controllers/upload.controller');
 const {
   obtenerAutos,
+  obtenerAutosPorTipo,
   obtenerAuto,
   ingresarAuto,
   actualizarAuto,
-  eliminarAuto,
+  eliminarAutoFisicamente,
+  eliminarAutoLogicamente,
   obtenerCitas,
-  eliminarCita,
-  recuperarAuto
+  eliminarCitaFisicamente,
+  eliminarCitaLogicamente,
+  recuperarAuto,
+  recuperarCita
 } = require("../controllers/administrador.controller");
-const { obtenerAutosPorTipo } = require("../controllers/usuarios.controller");
+
 
 administradorRoute.post("/registro", crearUsuario);
 administradorRoute.post("/iniciar", iniciarSesion);
 administradorRoute.get("/autos", protegerRutas, obtenerAutos);
-administradorRoute.get("/autos/tipos/:tipo", protegerRutas, obtenerAutosPorTipo);
+administradorRoute.get("/autos/tipo/:tipo", protegerRutas, obtenerAutosPorTipo);
 administradorRoute.get("/autos/:id_auto", protegerRutas, obtenerAuto);
-administradorRoute.post("/autos", protegerRutas, ingresarAuto);
-administradorRoute.put("/autos/:id_auto", protegerRutas, actualizarAuto);
+administradorRoute.post("/autos", protegerRutas,images.upload, ingresarAuto);
+administradorRoute.put("/autos/:id_auto", protegerRutas,images.upload, actualizarAuto);
+administradorRoute.delete("/autos/fisico/:id_auto", protegerRutas, eliminarAutoFisicamente);
+administradorRoute.delete("/autos/logico/:id_auto", protegerRutas, eliminarAutoLogicamente);
 administradorRoute.put("/autos/recuperar/:id_auto", protegerRutas, recuperarAuto);
-administradorRoute.delete("/autos/:id_auto", protegerRutas, eliminarAuto);
 administradorRoute.get("/citas", protegerRutas, obtenerCitas);
-administradorRoute.delete("/citas/:id_cita", protegerRutas, eliminarCita);
+administradorRoute.delete("/citas/fisico/:id_cita", protegerRutas, eliminarCitaFisicamente);
+administradorRoute.delete("/citas/logico/:id_cita", protegerRutas, eliminarCitaLogicamente);
+administradorRoute.put("/citas/recuperar/:id_cita", protegerRutas, recuperarCita);
 administradorRoute.delete("/cerrarSesion", protegerRutas, cerrarSesion);
 
 module.exports = administradorRoute;

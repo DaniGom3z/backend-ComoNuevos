@@ -1,40 +1,22 @@
-const { Sequelize, DataTypes } = require('sequelize');
+const mysql = require('mysql2');
 
-const sequelize = new Sequelize({
-    dialect: 'mysql',
-    host: process.env.DB_HOST,
-    username: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE
-});
+const createLoginTable = async (connection) => {
+  try {
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS login (
+        id_user INT AUTO_INCREMENT PRIMARY KEY,
+        nombre VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        contraseña VARCHAR(255) NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log('Tabla de login creada o ya existente');
+  } catch (error) {
+    console.error('Error al crear la tabla de login:', error);
+  }
+};
 
-const loginSchema = sequelize.define("login", {
-  id_user: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
-  nombre: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  email: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-  },
-  contraseña: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-});
-
-sequelize.sync()
-  .then(() => {
-    console.log('Modelo de login sincronizado con la base de datos');
-  })
-  .catch((error) => {
-    console.error('Error al sincronizar el modelo de login:', error);
-});
-
-module.exports = loginSchema;
+module.exports = {
+  createLoginTable
+};

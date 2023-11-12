@@ -17,12 +17,10 @@ const usuariosEjemplo = [
 const seedUsuarios = async () => {
   try {
     for (const usuario of usuariosEjemplo) {
-      // Hasheamos la contraseña
       const saltRounds = 10;
       const hash = await bcrypt.hash(usuario.contraseña, saltRounds);
       usuario.contraseña = hash;
 
-      // Crea el usuario en la base de datos
       await Login.create(usuario);
     }
 
