@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 
 const protegerRutas = (req, res, next) => {
-  const token = req.header("Authorization");
+  const token = req.headers.authorization;
 
   if (!token) {
     return res

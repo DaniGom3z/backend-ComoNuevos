@@ -1,15 +1,100 @@
 const express = require("express");
 const usuarioRoute = express.Router();
-const {
-  obtenerAutos,
-  obtenerAuto,
-  agregarCita,
-  obtenerAutosPorTipo,
-} = require("../controllers/usuarios.controller");
+const Auto = require("../controllers/auto.controller");
+const Cita = require("../controllers/cita.controller");
 
-usuarioRoute.get("/autos", obtenerAutos);
-usuarioRoute.get("/autos/tipos/:tipo", obtenerAutosPorTipo);
-usuarioRoute.get("/autos/:id_auto", obtenerAuto);
-usuarioRoute.post("/agendarcita", agregarCita);
+/**
+ * @openapi
+ * /autos:
+ *   get:
+ *     tags:
+ *       - Usuarios
+ *     parameters:
+ *       - name: tipo
+ *         in: query
+ *         required: false
+ *         description: tipo del auto
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 data:
+ *                   type: array 
+ *                   items: 
+ *                     type: object
+ */
+usuarioRoute.get("/autos", Auto.obtenerAutos);
+/**
+ * @openapi
+ * /autos/{id_auto}:
+ *   get:
+ *     tags:
+ *       - Usuarios
+ *     parameters:
+ *       - name: id_auto
+ *         in: path
+ *         required: true
+ *         description: ID del auto
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 data:
+ *                   type: object
+ */
+usuarioRoute.get("/autos/:id_auto", Auto.obtenerAuto);
+/**
+ * @openapi
+ * /agendarcita:
+ *   post:
+ *     tags:
+ *       - Usuarios
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nombre:
+ *                 type: string
+ *               correo:
+ *                 type: string
+ *               dia:
+ *                 type: string
+ *                 format: date-time
+ *     responses:
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 data:
+ *                   type: object
+ */
+usuarioRoute.post("/agendarcita", Cita.agregarCita);
+
 
 module.exports = usuarioRoute;
