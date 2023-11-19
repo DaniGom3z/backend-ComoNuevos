@@ -8,16 +8,14 @@ class Auto {
       let autosQuery = `
         SELECT autos.id_auto, autos.nombre, autos.precio
         FROM autos
+        LEFT JOIN tipos ON autos.id_tipo = tipos.id_tipo
         WHERE autos.deleted_at IS NULL
       `;
   
       const queryParams = [];
   
       if (tipo) {
-        autosQuery += `
-          JOIN tipos ON autos.id_tipo = tipos.id_tipo
-          WHERE tipos.tipoDeAuto = ? AND tipos.deleted_at IS NULL
-        `;
+        autosQuery += ` AND tipos.tipoDeAuto = ?`;
         queryParams.push(tipo);
       }
   
@@ -44,7 +42,6 @@ class Auto {
     }
   }
   
-
   static async obtenerAuto(id_auto) {
     try {
       const query = `
