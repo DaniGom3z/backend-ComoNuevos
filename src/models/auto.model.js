@@ -102,7 +102,6 @@ class Auto {
     }
   }
   
-
   static async ingresarAuto({
     id_user,
     nombre,
@@ -435,4 +434,5 @@ class Auto {
     }
   }
 }
+
 module.exports = Auto;
