@@ -133,11 +133,13 @@ class Cita {
   }
 
   static async obtenerCitas() {
+    let connection;
     try {
+      connection = await db.getConnection();
       const [citas] = await connection.query(
         "SELECT id_cita, nombre, correo, dia FROM citas WHERE deleted_at IS NULL"
       );
-  
+
       const citasFinales = citas.map((cita) => {
         return {
           id_cita: cita.id_cita,
@@ -146,15 +148,21 @@ class Cita {
           dia: cita.dia,
         };
       });
-  
+
       return citasFinales;
     } catch (error) {
       throw new Error(error.message);
+    } finally {
+      if (connection) {
+        await connection.release();
+      }
     }
   }
-  
+
   static async eliminarCitaFisicamente(id_cita) {
+    let connection;
     try {
+      connection = await db.getConnection();
       const [eliminado] = await connection.query(
         "DELETE FROM citas WHERE id_cita = ?",
         [id_cita]
@@ -167,11 +175,17 @@ class Cita {
       }
     } catch (error) {
       throw new Error(error.message);
+    } finally {
+      if (connection) {
+        await connection.release();
+      }
     }
   }
 
   static async eliminarCitaLogicamente(id_cita, id_user) {
+    let connection;
     try {
+      connection = await db.getConnection();
       const [updated] = await connection.query(
         "UPDATE citas SET deleted_at = NOW(), deleted_by = ? WHERE id_cita = ? AND deleted_at IS NULL",
         [id_user, id_cita]
@@ -184,11 +198,17 @@ class Cita {
       }
     } catch (error) {
       throw new Error(error.message);
+    } finally {
+      if (connection) {
+        await connection.release();
+      }
     }
   }
 
   static async recuperarCita(id_cita) {
+    let connection;
     try {
+      connection = await db.getConnection();
       const [actualizado] = await connection.query(
         "UPDATE citas SET deleted_at = NULL, deleted_by = NULL WHERE id_cita = ? AND deleted_at IS NOT NULL",
         [id_cita]
@@ -201,6 +221,10 @@ class Cita {
       }
     } catch (error) {
       throw new Error(error.message);
+    } finally {
+      if (connection) {
+        await connection.release();
+      }
     }
   }
 }

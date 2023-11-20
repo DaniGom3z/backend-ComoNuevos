@@ -13,7 +13,12 @@ const io = new SocketServer(server, {
     origin: "*",
   },
 });
-
+const corsOption={
+  origin:"*",
+  credentials : true ,
+  methods:"GET,HEAD,PUT,PATCH,POST,DELETE",
+  optionsSuccesStatus:204
+}
 const PORT = process.env.PORT || 4000;
 
 app.use(express.json());
