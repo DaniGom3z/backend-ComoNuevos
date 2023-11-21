@@ -564,6 +564,38 @@ administradorRoute.delete("/eliminarcitalogica/:id_cita",protegerRutas,Cita.elim
  */
 administradorRoute.put("/recuperarcita/:id_cita",protegerRutas,Cita.recuperarCita);
 
+/**
+ * @openapi
+ * /informacion/{id_user}:
+ *   get:
+ *     tags:
+ *       - Administrador
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id_user
+ *         in: path
+ *         required: true
+ *         description: ID del usuario
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ */
+administradorRoute.get("/informacion/:id_user", protegerRutas, admin.ObtenerAdminPorID);
 
 /**
  * @openapi

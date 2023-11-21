@@ -1,18 +1,23 @@
 const Auto = require("../models/auto.model");
 
 async function obtenerAutos(req, res) {
-    const { tipo } = req.query;
-    const { page = 1, perPage = 10 } = req.query;
+  const { tipo } = req.query;
+  let { page = 1, perPage = 10, sort, order } = req.query;
 
-    try {
-        const autos = await Auto.obtenerAutos(tipo, page, perPage);
-        res.json(autos);
-    } catch (error) {
-        console.error("Error al obtener autos:", error.message);
-        res.status(500).json({ error: error.message });
-    }
+  page = parseInt(page);
+  perPage = parseInt(perPage);
+
+  try {
+    const offset = (page - 1) * perPage;
+
+    const autos = await Auto.obtenerAutos(tipo, offset, perPage, sort, order);
+
+    res.json(autos);
+  } catch (error) {
+    console.error("Error al obtener autos:", error.message);
+    res.status(500).json({ error: error.message });
+  }
 }
-
 
 const obtenerAuto = async (req, res) => {
   const { id_auto } = req.params;
@@ -92,7 +97,6 @@ const ingresarAuto = async (req, res) => {
 const actualizarAuto = async (req, res) => {
   const { id_auto } = req.params;
   try {
-    // Obtén los datos necesarios del cuerpo de la solicitud y otros objetos del request
     const {
       nombre,
       precio,
@@ -203,5 +207,5 @@ module.exports = {
   actualizarAuto,
   eliminarAutoFisicamente,
   eliminarAutoLogicamente,
-  recuperarAuto
+  recuperarAuto,
 };

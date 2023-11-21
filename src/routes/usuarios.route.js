@@ -96,5 +96,4 @@ usuarioRoute.get("/autos/:id_auto", Auto.obtenerAuto);
  */
 usuarioRoute.post("/agendarcita", Cita.agregarCita);
 
-
 module.exports = usuarioRoute;

@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const cors=require("cors");
 const http = require("http");
 const { Server: SocketServer } = require("socket.io");
 const usuariosRouter = require("./src/routes/usuarios.route");
@@ -13,6 +14,7 @@ const io = new SocketServer(server, {
     origin: "*",
   },
 });
+
 const corsOption={
   origin:"*",
   credentials : true ,
@@ -20,7 +22,7 @@ const corsOption={
   optionsSuccesStatus:204
 }
 const PORT = process.env.PORT || 4000;
-
+app.use(cors(corsOption))
 app.use(express.json());
 app.use(administradorRouter);
 app.use(usuariosRouter);

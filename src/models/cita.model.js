@@ -1,8 +1,7 @@
 require("dotenv").config();
-const db = require('../config/db.config');
+const db = require("../config/db.config");
 const nodemailer = require("nodemailer");
 const validator = require("validator");
-
 
 class Cita {
   static async agregarCita(nombre, correo, dia) {
@@ -11,24 +10,20 @@ class Cita {
       connection = await db.getConnection();
       await connection.beginTransaction();
 
-      if (typeof correo !== 'string' || !validator.isEmail(correo)) {
-        throw new Error('Correo electrónico no válido');
+      if (typeof correo !== "string" || !validator.isEmail(correo)) {
+        throw new Error("Correo electrónico no válido");
       }
 
-      const [citaExistente] = await connection.query(
-        'SELECT * FROM citas WHERE correo = ?',
-        [correo]
-      );
-      if (citaExistente.length > 0) {
-        throw new Error('El correo ya está registrado en la tabla de citas');
-      }
-
-      const [result] = await connection.query(
-        'INSERT INTO citas (nombre, correo, dia) VALUES (?, ?, ?)',
+      const result = await db.query(
+        "INSERT INTO citas (nombre, correo, dia) VALUES (?, ?, ?)",
         [nombre, correo, dia]
       );
 
-      const nuevaCitaId = result.insertId;
+      console.log(result);
+      const nuevaCitaId = result.insertId || result[0]?.insertId;
+
+      console.log(nuevaCitaId);
+
       await connection.commit();
 
       const transporter = nodemailer.createTransport({
@@ -132,15 +127,14 @@ class Cita {
     }
   }
 
-  static async obtenerCitas() {
+  static async obtenerCitas(offset, limit, sort, order) {
     let connection;
     try {
       connection = await db.getConnection();
-      const [citas] = await connection.query(
-        "SELECT id_cita, nombre, correo, dia FROM citas WHERE deleted_at IS NULL"
-      );
-
-      const citasFinales = citas.map((cita) => {
+    
+      const [result] = await connection.query('CALL ObtenerCitas(?, ?, ?, ?)', [offset, limit, sort, order]);
+    
+      const citasFinales = result[0].map((cita) => {
         return {
           id_cita: cita.id_cita,
           nombre: cita.nombre,
@@ -148,34 +142,47 @@ class Cita {
           dia: cita.dia,
         };
       });
-
-      return citasFinales;
+    
+      return {
+        citasFinales,
+      };
     } catch (error) {
-      throw new Error(error.message);
+      console.error("Error en obtenerCitas:", error);
+      return {
+        error: error.message,
+      };
     } finally {
       if (connection) {
         await connection.release();
       }
     }
   }
-
+  
   static async eliminarCitaFisicamente(id_cita) {
     let connection;
     try {
       connection = await db.getConnection();
+      await connection.beginTransaction();
+
       const [eliminado] = await connection.query(
         "DELETE FROM citas WHERE id_cita = ?",
         [id_cita]
       );
 
       if (eliminado.affectedRows > 0) {
+        await connection.commit();
         return { mensaje: "Cita eliminada físicamente exitosamente" };
       } else {
         throw new Error("Cita no encontrada");
       }
     } catch (error) {
+      // Revertir la transacción en caso de error
+      if (connection) {
+        await connection.rollback();
+      }
       throw new Error(error.message);
     } finally {
+      // Asegurarse de liberar la conexión
       if (connection) {
         await connection.release();
       }
@@ -186,19 +193,27 @@ class Cita {
     let connection;
     try {
       connection = await db.getConnection();
+      await connection.beginTransaction();
+
       const [updated] = await connection.query(
         "UPDATE citas SET deleted_at = NOW(), deleted_by = ? WHERE id_cita = ? AND deleted_at IS NULL",
         [id_user, id_cita]
       );
 
       if (updated.affectedRows > 0) {
+        await connection.commit();
         return { mensaje: "Cita eliminada lógicamente exitosamente" };
       } else {
         throw new Error("Cita no encontrada");
       }
     } catch (error) {
+      // Revertir la transacción en caso de error
+      if (connection) {
+        await connection.rollback();
+      }
       throw new Error(error.message);
     } finally {
+      // Asegurarse de liberar la conexión
       if (connection) {
         await connection.release();
       }
@@ -209,19 +224,27 @@ class Cita {
     let connection;
     try {
       connection = await db.getConnection();
+      await connection.beginTransaction();
+
       const [actualizado] = await connection.query(
         "UPDATE citas SET deleted_at = NULL, deleted_by = NULL WHERE id_cita = ? AND deleted_at IS NOT NULL",
         [id_cita]
       );
 
       if (actualizado.affectedRows > 0) {
+        await connection.commit();
         return { mensaje: "Cita recuperada exitosamente" };
       } else {
         throw new Error("Cita no encontrada o no eliminada previamente");
       }
     } catch (error) {
+      // Revertir la transacción en caso de error
+      if (connection) {
+        await connection.rollback();
+      }
       throw new Error(error.message);
     } finally {
+      // Asegurarse de liberar la conexión
       if (connection) {
         await connection.release();
       }

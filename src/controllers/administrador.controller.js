@@ -38,6 +38,17 @@ const iniciarSesion=async(req, res) =>{
   }
 }
 
+const ObtenerAdminPorID = async (req, res) => {
+  const { id_user } = req.params; 
+  try {
+    const { usuario } = await Administrador.obtenerAdminPorID(id_user);
+
+    res.json({ usuario });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 const cerrarSesion = async (req, res) => {
   const token = req.headers["authorization"];
 
@@ -52,5 +63,6 @@ const cerrarSesion = async (req, res) => {
 module.exports = {
   crearUsuario,
   iniciarSesion,
+  ObtenerAdminPorID,
   cerrarSesion
 };

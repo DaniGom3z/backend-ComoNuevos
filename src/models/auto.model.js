@@ -3,26 +3,28 @@ const baseURL = "http://localhost:9000/uploads/";
 const connection = require("../config/db.config");
 
 class Auto {
-  static async obtenerAutos(tipo, page = 1, perPage = 10) {
+  static async obtenerAutos(tipo, offset = 0, limit = 10, sort, order) {
     try {
       let autosQuery = `
-        SELECT autos.id_auto, autos.nombre, autos.precio
-        FROM autos
-        LEFT JOIN tipos ON autos.id_tipo = tipos.id_tipo
-        WHERE autos.deleted_at IS NULL
+        SELECT autos.id_auto,autos.nombre,autos.precio,IF(deleted_at IS null,false,true) AS eliminada_logicamente FROM autos
+        LEFT JOIN tipos ON autos.id_tipo=tipos.id_tipo
       `;
   
       const queryParams = [];
   
       if (tipo) {
-        autosQuery += ` AND tipos.tipoDeAuto = ?`;
+        autosQuery += ` WHERE tipos.tipoDeAuto = ?`;
         queryParams.push(tipo);
+      }
+  
+      if (sort && order) {
+        autosQuery += ` ORDER BY ${sort} ${order}`;
       }
   
       autosQuery += `
         LIMIT ? OFFSET ?
       `;
-      queryParams.push(perPage, (page - 1) * perPage);
+      queryParams.push(limit, offset);
   
       const [autosRows] = await connection.query(autosQuery, queryParams);
   
@@ -129,7 +131,11 @@ class Auto {
     imagenInterior,
     imagenLateral,
   }) {
+    let transaction;
     try {
+      transaction = await connection.getConnection();
+      await transaction.beginTransaction();
+
       const [motor] = await connection.query(
         "SELECT id_motor FROM motores WHERE motor = ?",
         [nombre_motor]
@@ -182,6 +188,7 @@ class Auto {
           id_user,
         ]
       );
+      
 
       const nuevoAutoId = result.insertId;
 
@@ -208,9 +215,10 @@ class Auto {
           }
         ),
       ]);
-
+      await transaction.commit();
       return { id_auto: nuevoAutoId };
     } catch (error) {
+      await transaction.rollback();
       throw new Error(error.message);
     }
   }
@@ -243,7 +251,10 @@ class Auto {
     imagenInterior,
     imagenLateral,
   }) {
+    let transaction;
     try {
+      transaction = await connection.getConnection();
+      await transaction.beginTransaction();
       // Obtén los IDs de las claves foráneas desde sus respectivas tablas
       const [motorResult] = await connection.query(
         "SELECT id_motor FROM motores WHERE motor = ?",
@@ -350,18 +361,23 @@ class Auto {
             await fs.rename(imagenLateral[0].path, imagenLateralPath);
           }
         }
+        await transaction.commit();
 
         return { mensaje: "Auto actualizado exitosamente" };
       } else {
         throw new Error("Auto no encontrado");
       }
     } catch (error) {
+      await transaction.rollback();
       throw new Error(error.message);
     }
   }
 
   static async eliminarAutoFisicamente(id_auto) {
+    let transaction;
     try {
+      transaction = await connection.getConnection();
+      await transaction.beginTransaction();
       const [auto] = await connection.query(
         "SELECT * FROM autos WHERE id_auto = ?",
         [id_auto]
@@ -391,45 +407,57 @@ class Auto {
       );
 
       if (eliminado.affectedRows > 0) {
+        await transaction.commit();
         return { mensaje: "Auto y sus imágenes eliminados exitosamente" };
       } else {
         throw new Error("Error al eliminar el auto físicamente");
       }
     } catch (error) {
+      await transaction.rollback();
       throw new Error(error.message);
     }
   }
 
   static async eliminarAutoLogicamente(id_auto, id_user) {
+    let transaction;
     try {
+      transaction = await connection.getConnection();
+      await transaction.beginTransaction();
       const [updated] = await connection.query(
         "UPDATE autos SET deleted_at = NOW(), deleted_by = ? WHERE id_auto = ? AND deleted_at IS NULL",
         [id_user, id_auto]
       );
 
       if (updated.affectedRows > 0) {
+        await transaction.commit();
         return { mensaje: "Auto eliminado lógicamente exitosamente" };
       } else {
         throw new Error("Auto no encontrado o ya eliminado");
       }
     } catch (error) {
+      await transaction.rollback();
       throw new Error(error.message);
     }
   }
 
   static async recuperarAuto(id_auto) {
+    let transaction;
     try {
+      transaction = await connection.getConnection();
+      await transaction.beginTransaction();
       const [actualizado] = await connection.query(
         "UPDATE autos SET deleted_at = NULL, deleted_by = NULL WHERE id_auto = ? AND deleted_at IS NOT NULL",
         [id_auto]
       );
 
       if (actualizado.affectedRows > 0) {
+        await transaction.commit();
         return { mensaje: "Auto recuperado exitosamente" };
       } else {
         throw new Error("Auto no encontrado o no eliminado previamente");
       }
     } catch (error) {
+      await transaction.rollback();
       throw new Error(error.message);
     }
   }
