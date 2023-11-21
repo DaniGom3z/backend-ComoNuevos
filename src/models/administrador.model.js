@@ -77,7 +77,7 @@ class Administrador {
   
       const usuario = rows[0][0];
   
-      return { usuario };
+      return { usuario};
     } catch (error) {
       throw new Error(error.message);
     }

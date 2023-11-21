@@ -140,6 +140,7 @@ class Cita {
           nombre: cita.nombre,
           correo: cita.correo,
           dia: cita.dia,
+          eliminada_logicamente: cita.eliminada_logicamente,
         };
       });
     

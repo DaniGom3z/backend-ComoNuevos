@@ -39,7 +39,7 @@ const iniciarSesion=async(req, res) =>{
 }
 
 const ObtenerAdminPorID = async (req, res) => {
-  const { id_user } = req.params; 
+  const id_user = req.id_user;
   try {
     const { usuario } = await Administrador.obtenerAdminPorID(id_user);
 

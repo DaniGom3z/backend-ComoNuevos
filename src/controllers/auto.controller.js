@@ -2,7 +2,7 @@ const Auto = require("../models/auto.model");
 
 async function obtenerAutos(req, res) {
   const { tipo } = req.query;
-  let { page = 1, perPage = 10, sort, order } = req.query;
+  let { page = 1, perPage=10, sort, order } = req.query;
 
   page = parseInt(page);
   perPage = parseInt(perPage);

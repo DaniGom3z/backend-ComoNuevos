@@ -35,6 +35,7 @@ class Auto {
         return {
           ...auto,
           imagen: baseURL + imagenFilename,
+          eliminada_logicamente:auto.eliminada_logicamente
         };
       });
   
