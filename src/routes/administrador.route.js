@@ -80,7 +80,7 @@ administradorRoute.post("/iniciar", admin.iniciarSesion);
  *   get:
  *     tags:
  *       - Administrador
-  *     security:
+ *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - name: tipo
@@ -89,6 +89,31 @@ administradorRoute.post("/iniciar", admin.iniciarSesion);
  *         description: tipo del auto
  *         schema:
  *           type: string
+ *       - name: page
+ *         in: query
+ *         required: false
+ *         description: Página a recuperar
+ *         schema:
+ *           type: integer
+ *       - name: perPage
+ *         in: query
+ *         required: false
+ *         description: Cantidad de elementos por página
+ *         schema:
+ *           type: integer
+ *       - name: sort
+ *         in: query
+ *         required: false
+ *         description: Campo por el cual ordenar los resultados
+ *         schema:
+ *           type: string
+ *       - name: order
+ *         in: query
+ *         required: false
+ *         description: Orden de clasificación (ascendente o descendente)
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
  *     responses:
  *       200:
  *         description: OK
@@ -101,11 +126,28 @@ administradorRoute.post("/iniciar", admin.iniciarSesion);
  *                   type: string
  *                   example: OK
  *                 data:
- *                   type: array 
- *                   items: 
+ *                   type: array
+ *                   items:
  *                     type: object
+ *                     properties:
+ *                       id_auto:
+ *                         type: integer
+ *                         description: ID del auto
+ *                       nombre:
+ *                         type: string
+ *                         description: Nombre del auto
+ *                       precio:
+ *                         type: number
+ *                         description: Precio del auto
+ *                       eliminada_logicamente:
+ *                         type: boolean
+ *                         description: Indica si el auto ha sido eliminado lógicamente
+ *                       imagen:
+ *                         type: string
+ *                         description: URL de la imagen frontal del auto
  */
 administradorRoute.get("/auto", protegerRutas, Auto.obtenerAutos);
+
 
 /**
  * @openapi
@@ -453,6 +495,32 @@ administradorRoute.put("/recuperarauto/:id_auto",protegerRutas,Auto.recuperarAut
  *       - Administrador
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - name: page
+ *         in: query
+ *         required: false
+ *         description: Página a recuperar
+ *         schema:
+ *           type: integer
+ *       - name: perPage
+ *         in: query
+ *         required: false
+ *         description: Cantidad de elementos por página
+ *         schema:
+ *           type: integer
+ *       - name: sort
+ *         in: query
+ *         required: false
+ *         description: Campo por el cual ordenar los resultados
+ *         schema:
+ *           type: string
+ *       - name: order
+ *         in: query
+ *         required: false
+ *         description: Orden de clasificación (ascendente o descendente)
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
  *     responses:
  *       200:
  *         description: OK
@@ -465,9 +533,21 @@ administradorRoute.put("/recuperarauto/:id_auto",protegerRutas,Auto.recuperarAut
  *                   type: string
  *                   example: OK
  *                 data:
- *                   type: array
- *                   items:
- *                     type: object
+ *                   type: object
+ *                   properties:
+ *                     citasFinales:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id_cita:
+ *                             type: integer
+ *                           nombre:
+ *                             type: string
+ *                           correo:
+ *                             type: string
+ *                           dia:
+ *                             type: string
  */
 administradorRoute.get("/citas", protegerRutas, Cita.obtenerCitas);
 
