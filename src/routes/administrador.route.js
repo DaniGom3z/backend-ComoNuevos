@@ -700,6 +700,6 @@ administradorRoute.get("/informacion", protegerRutas, admin.ObtenerAdminPorID);
  *                 data:
  *                   type: object
  */
-administradorRoute.delete("/cerrarSesion", protegerRutas, admin.cerrarSesion);
+administradorRoute.post("/cerrarSesion", protegerRutas, admin.cerrarSesion);
 
 module.exports = administradorRoute;
