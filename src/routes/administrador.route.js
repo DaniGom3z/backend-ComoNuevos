@@ -5,6 +5,7 @@ const images = require("../controllers/upload.controller");
 const admin = require("../controllers/administrador.controller");
 const Auto = require("../controllers/auto.controller");
 const Cita = require("../controllers/cita.controller");
+const limiter = require("../middlewares/limite");
 
 /**
  * @openapi
@@ -72,7 +73,7 @@ administradorRoute.post("/registro", admin.crearUsuario);
  *                 data:
  *                   type: object
  */
-administradorRoute.post("/iniciar", admin.iniciarSesion);
+administradorRoute.post("/iniciar",limiter, admin.iniciarSesion);
 
 /**
  * @openapi
