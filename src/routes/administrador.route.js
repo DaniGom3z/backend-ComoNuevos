@@ -675,7 +675,7 @@ administradorRoute.put("/recuperarcita/:id_cita",protegerRutas,Cita.recuperarCit
  *                   items:
  *                     type: object
  */
-administradorRoute.get("/informacion/:id_user", protegerRutas, admin.ObtenerAdminPorID);
+administradorRoute.get("/informacion", protegerRutas, admin.ObtenerAdminPorID);
 
 /**
  * @openapi
