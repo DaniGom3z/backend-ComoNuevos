@@ -60,43 +60,33 @@
 
 ## Procedimientos Almacenados
 ### Ejecuta los siguientes codigos en la base de datos:
->  DELIMITER // <br/>
-
+> 1. DELIMITER // <br/>
 >-- Crear el procedimiento almacenado <br/>
 >CREATE PROCEDURE ObtenerUsuarioPorID(IN usuarioID INT) <br/>
 >BEGIN<br/>
 >  -- Instrucción SQL para obtener información del usuario por ID <br/>
 >  SELECT * FROM login WHERE id_user = usuarioID; <br/>
 >END // <br/>
-
 >-- Restaurar el delimitador a ; <br/>
 >DELIMITER ; <br/>
-
 > 1. DELIMITER // <br/>
-
 >CREATE PROCEDURE ObtenerCitas(IN offsetVal INT, IN limitVal INT, IN sort VARCHAR(255), IN orderType VARCHAR(4))<br/>
 >BEGIN<br/>
 >  DECLARE sortClause VARCHAR(255);<br/>
 >  SET sortClause = IFNULL(CONCAT('ORDER BY ', sort, ' ', orderType), '');<br/>
-
 >  SET @query = CONCAT(<br/>
 >   'SELECT id_cita, nombre, correo, dia, IF(deleted_at IS NULL, false,true) AS eliminada_logicamente FROM citas<br/>
 >',<br/>
 >    sortClause,<br/>
 >    ' LIMIT ? OFFSET ?'<br/>
 > );<br/>
-
 >  PREPARE stmt FROM @query;<br/>
 >  SET @limitVal = limitVal;<br/>
 >  SET @offsetVal = offsetVal;<br/>
-
 >  EXECUTE stmt USING @limitVal, @offsetVal;<br/>
-
 >  DEALLOCATE PREPARE stmt;<br/>
 >END //<br/>
-
 >DELIMITER ;<br/>
-
 
 
 ## Ejecución
