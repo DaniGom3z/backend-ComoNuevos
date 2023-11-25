@@ -13,7 +13,7 @@
 >EMAIL_USER <br/>
 >EMAIL_PASS <br/>
 
-### La aplicación también utiliza Swagger para documentar la API. La documentación estará disponible en http://localhost:{PORT}/api-docs.
+### La aplicación también utiliza Swagger para documentar la API. La documentación estará disponible en http://localhost:{PORT}/docs.
 
 ## Instalación
 1. Clona el repositorio:
