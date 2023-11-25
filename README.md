@@ -4,11 +4,11 @@
 
 ## Configuración
 ### Antes de ejecutar la aplicación, asegúrate de tener configuradas las variables de entorno. Crea un archivo .env en el directorio raíz y define las siguientes variables:
->PORT
->>DB_HOST
->>>DB_USER
->>>>DB_PASSWORD
->>>>>DB_DATABASE
+>PORT <br/>
+>DB_HOST
+>DB_USER
+>DB_PASSWORD
+>DB_DATABASE
 >JWT_SECRET
 >EMAIL_USER
 >EMAIL_PASS
@@ -60,7 +60,7 @@ DELIMITER ;
 
 ## Procedimientos Almacenados
 ### Ejecuta los siguientes codigos en la base de datos:
-1. DELIMITER //
+> DELIMITER //
 
 -- Crear el procedimiento almacenado
 CREATE PROCEDURE ObtenerUsuarioPorID(IN usuarioID INT)
@@ -71,7 +71,10 @@ END //
 
 -- Restaurar el delimitador a ;
 DELIMITER ;
-1. CREATE PROCEDURE ObtenerCitas(IN offsetVal INT, IN limitVal INT, IN sort VARCHAR(255), IN orderType VARCHAR(4))
+
+>DELIMITER //
+
+CREATE PROCEDURE ObtenerCitas(IN offsetVal INT, IN limitVal INT, IN sort VARCHAR(255), IN orderType VARCHAR(4))
 BEGIN
   DECLARE sortClause VARCHAR(255);
   SET sortClause = IFNULL(CONCAT('ORDER BY ', sort, ' ', orderType), '');
@@ -93,6 +96,7 @@ BEGIN
 END //
 
 DELIMITER ;
+
 
 
 ## Ejecución
