@@ -60,42 +60,42 @@
 
 ## Procedimientos Almacenados
 ### Ejecuta los siguientes codigos en la base de datos:
-> DELIMITER //
+>  DELIMITER // <br/>
 
--- Crear el procedimiento almacenado
-CREATE PROCEDURE ObtenerUsuarioPorID(IN usuarioID INT)
-BEGIN
-  -- Instrucción SQL para obtener información del usuario por ID
-  SELECT * FROM login WHERE id_user = usuarioID;
-END //
+>-- Crear el procedimiento almacenado <br/>
+>CREATE PROCEDURE ObtenerUsuarioPorID(IN usuarioID INT) <br/>
+>BEGIN<br/>
+>  -- Instrucción SQL para obtener información del usuario por ID <br/>
+>  SELECT * FROM login WHERE id_user = usuarioID; <br/>
+>END // <br/>
 
--- Restaurar el delimitador a ;
-DELIMITER ;
+>-- Restaurar el delimitador a ; <br/>
+>DELIMITER ; <br/>
 
->DELIMITER //
+> 1. DELIMITER // <br/>
 
-CREATE PROCEDURE ObtenerCitas(IN offsetVal INT, IN limitVal INT, IN sort VARCHAR(255), IN orderType VARCHAR(4))
-BEGIN
-  DECLARE sortClause VARCHAR(255);
-  SET sortClause = IFNULL(CONCAT('ORDER BY ', sort, ' ', orderType), '');
+>CREATE PROCEDURE ObtenerCitas(IN offsetVal INT, IN limitVal INT, IN sort VARCHAR(255), IN orderType VARCHAR(4))<br/>
+>BEGIN<br/>
+>  DECLARE sortClause VARCHAR(255);<br/>
+>  SET sortClause = IFNULL(CONCAT('ORDER BY ', sort, ' ', orderType), '');<br/>
 
-  SET @query = CONCAT(
-    'SELECT id_cita, nombre, correo, dia, IF(deleted_at IS NULL, false,true) AS eliminada_logicamente FROM citas
-',
-    sortClause,
-    ' LIMIT ? OFFSET ?'
-  );
+>  SET @query = CONCAT(<br/>
+>   'SELECT id_cita, nombre, correo, dia, IF(deleted_at IS NULL, false,true) AS eliminada_logicamente FROM citas<br/>
+>',<br/>
+>    sortClause,<br/>
+>    ' LIMIT ? OFFSET ?'<br/>
+> );<br/>
 
-  PREPARE stmt FROM @query;
-  SET @limitVal = limitVal;
-  SET @offsetVal = offsetVal;
+>  PREPARE stmt FROM @query;<br/>
+>  SET @limitVal = limitVal;<br/>
+>  SET @offsetVal = offsetVal;<br/>
 
-  EXECUTE stmt USING @limitVal, @offsetVal;
+>  EXECUTE stmt USING @limitVal, @offsetVal;<br/>
 
-  DEALLOCATE PREPARE stmt;
-END //
+>  DEALLOCATE PREPARE stmt;<br/>
+>END //<br/>
 
-DELIMITER ;
+>DELIMITER ;<br/>
 
 
 
@@ -104,9 +104,9 @@ DELIMITER ;
 ### La aplicación estará disponible en http://localhost:{PORT}.
 
 ## Estructura del Proyecto.
-1. src/routes/usuarios.route.js: Contiene las rutas relacionadas con la gestión de usuarios.
-1. src/routes/administrador.route.js: Contiene las rutas relacionadas con la gestión de administradores.
-1. src/documentacion/swagger.js: Configuración para generar la documentación Swagger.
+1. src/routes/usuarios.route.js: Contiene las rutas relacionadas con la gestión de usuarios.<br/>
+1. src/routes/administrador.route.js: Contiene las rutas relacionadas con la gestión de administradores.<br/>
+1. src/documentacion/swagger.js: Configuración para generar la documentación Swagger.<br/>
 
 ## Endpoints de la API del Administrador.
 
