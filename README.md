@@ -5,13 +5,13 @@
 ## Configuración
 ### Antes de ejecutar la aplicación, asegúrate de tener configuradas las variables de entorno. Crea un archivo .env en el directorio raíz y define las siguientes variables:
 >PORT <br/>
->DB_HOST
->DB_USER
->DB_PASSWORD
->DB_DATABASE
->JWT_SECRET
->EMAIL_USER
->EMAIL_PASS
+>DB_HOST <br/>
+>DB_USER <br/>
+>DB_PASSWORD <br/>
+>DB_DATABASE <br/>
+>JWT_SECRET <br/>
+>EMAIL_USER <br/>
+>EMAIL_PASS <br/>
 
 ### La aplicación también utiliza Swagger para documentar la API. La documentación estará disponible en http://localhost:{PORT}/api-docs.
 
@@ -32,31 +32,31 @@
 
 ## Trigger
 ### Ejecuta los siguientes codigos en la base de datos:
-1. DELIMITER //
-CREATE TRIGGER before_insert_citas
-BEFORE INSERT ON citas
-FOR EACH ROW
-BEGIN
-  IF EXISTS (SELECT 1 FROM citas WHERE correo = NEW.correo) THEN
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = 'El correo ya está registrado en la tabla de citas';
-  END IF;
-END;
-//
-DELIMITER ;
-1. DELIMITER //
-CREATE TRIGGER before_insert_cita
-BEFORE INSERT ON citas
-FOR EACH ROW
-BEGIN
-  -- Validar que la fecha de la cita no sea menor a la fecha actual
-  IF NEW.dia < CURDATE() THEN
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = 'La fecha de la cita no puede ser menor a la fecha actual';
-  END IF;
-END;
-//
-DELIMITER ;
+> 1. DELIMITER // <br/>
+>CREATE TRIGGER before_insert_citas <br/>
+>BEFORE INSERT ON citas <br/>
+>FOR EACH ROW <br/>
+>BEGIN <br/>
+>  IF EXISTS (SELECT 1 FROM citas WHERE correo = NEW.correo) THEN <br/>
+>    SIGNAL SQLSTATE '45000' <br/>
+>    SET MESSAGE_TEXT = 'El correo ya está registrado en la tabla de citas'; <br/>
+>  END IF; <br/>
+>END; <br/>
+>// <br/>
+>DELIMITER ; <br/>
+> 1. DELIMITER // <br/>
+>CREATE TRIGGER before_insert_cita <br/>
+>BEFORE INSERT ON citas <br/>
+>FOR EACH ROW <br/>
+>BEGIN <br/>
+> -- Validar que la fecha de la cita no sea menor a la fecha actual <br/>
+>  IF NEW.dia < CURDATE() THEN <br/>
+>    SIGNAL SQLSTATE '45000' <br/>
+>   SET MESSAGE_TEXT = 'La fecha de la cita no puede ser menor a la fecha actual'; <br/>
+>  END IF; <br/>
+>END; <br/>
+>// <br/>
+>DELIMITER ; <br/>
 
 ## Procedimientos Almacenados
 ### Ejecuta los siguientes codigos en la base de datos:
