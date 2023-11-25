@@ -42,7 +42,6 @@ const ObtenerAdminPorID = async (req, res) => {
   const id_user = req.id_user;
   try {
     const { usuario } = await Administrador.obtenerAdminPorID(id_user);
-
     res.json({ usuario });
   } catch (error) {
     res.status(500).json({ error: error.message });

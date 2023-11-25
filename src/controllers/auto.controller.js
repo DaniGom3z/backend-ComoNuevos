@@ -2,7 +2,7 @@ const Auto = require("../models/auto.model");
 
 async function obtenerAutos(req, res) {
   const { tipo } = req.query;
-  let { page = 1, perPage=10, sort, order } = req.query;
+  let { page = 1, perPage=6, sort, order } = req.query;
 
   page = parseInt(page);
   perPage = parseInt(perPage);
@@ -11,7 +11,6 @@ async function obtenerAutos(req, res) {
     const offset = (page - 1) * perPage;
 
     const autos = await Auto.obtenerAutos(tipo, offset, perPage, sort, order);
-
     res.json(autos);
   } catch (error) {
     console.error("Error al obtener autos:", error.message);
@@ -86,7 +85,7 @@ const ingresarAuto = async (req, res) => {
       imagenInterior,
       imagenLateral,
     });
-
+    await new Promise(resolve => setTimeout(resolve, 3500));
     res.json(result);
   } catch (error) {
     console.error("Error al ingresar auto:", error.message);
@@ -123,12 +122,10 @@ const actualizarAuto = async (req, res) => {
 
     const id_user = req.id_user;
 
-    // Verifica si se proporcionaron archivos de imagen
     const imagenFrontal = req.files?.imagenFrontal;
     const imagenInterior = req.files?.imagenInterior;
     const imagenLateral = req.files?.imagenLateral;
 
-    // Llama al método del modelo para actualizar el auto
     const resultado = await Auto.actualizarAuto({
       id_auto,
       id_user,
@@ -157,8 +154,7 @@ const actualizarAuto = async (req, res) => {
       imagenInterior,
       imagenLateral,
     });
-
-    // Maneja la respuesta del modelo y envía la respuesta HTTP
+    await new Promise(resolve => setTimeout(resolve, 3500));
     res.json(resultado);
   } catch (err) {
     console.error("Error al actualizar auto:", err);
@@ -194,6 +190,7 @@ const recuperarAuto = async (req, res) => {
 
   try {
     const resultado = await Auto.recuperarAuto(id_auto);
+    await new Promise(resolve => setTimeout(resolve, 3500));
     res.json(resultado);
   } catch (error) {
     res.status(500).json({ error: error.message });

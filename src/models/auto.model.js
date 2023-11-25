@@ -256,7 +256,6 @@ class Auto {
     try {
       transaction = await connection.getConnection();
       await transaction.beginTransaction();
-      // Obtén los IDs de las claves foráneas desde sus respectivas tablas
       const [motorResult] = await connection.query(
         "SELECT id_motor FROM motores WHERE motor = ?",
         [nombre_motor]
@@ -282,7 +281,6 @@ class Auto {
         [nombre_color]
       );
 
-      // Actualiza el registro del auto con los nuevos datos
       const updateQuery = `
         UPDATE autos
         SET nombre = ?,
@@ -340,7 +338,6 @@ class Auto {
       const [result] = await connection.query(updateQuery, updateValues);
 
       if (result.affectedRows > 0) {
-        // Actualiza las imágenes solo si se proporcionan en la solicitud
         if (imagenFrontal || imagenInterior || imagenLateral) {
           const imagenFrontalFilename = `${id_auto}_frontal.png`;
           const imagenInteriorFilename = `${id_auto}_interior.png`;

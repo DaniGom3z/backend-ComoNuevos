@@ -4,6 +4,7 @@ const agregarCita = async (req, res) => {
   try {
     const { nombre, correo, dia } = req.body;
     const resultado = await Cita.agregarCita(nombre, correo, dia);
+    await new Promise(resolve => setTimeout(resolve, 3500));
 
     res.json(resultado);
   } catch (err) {
@@ -20,6 +21,7 @@ const obtenerCitas = async (req, res) => {
   try {
     const offset = (page - 1) * perPage;
     const citas = await Cita.obtenerCitas(offset, perPage, sort, order);
+
     res.json(citas);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -46,7 +48,6 @@ const eliminarCitaLogicamente = async (req, res) => {
 
   try {
     const resultado = await Cita.eliminarCitaLogicamente(id_cita, id_user);
-
     res.json(resultado);
   } catch (err) {
     res.status(500).json({ error: err.message });
