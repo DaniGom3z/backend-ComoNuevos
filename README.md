@@ -1,9 +1,9 @@
 # **Api ComoNuevos**
 
-###Este repositorio contiene una API desarrollada con Express que maneja relaciones estructuradas entre usuarios y administradores.
+### Este repositorio contiene una API desarrollada con Express que maneja relaciones estructuradas entre usuarios y administradores.
 
-##Configuración
-###Antes de ejecutar la aplicación, asegúrate de tener configuradas las variables de entorno. Crea un archivo .env en el directorio raíz y define las siguientes variables:
+## Configuración
+### Antes de ejecutar la aplicación, asegúrate de tener configuradas las variables de entorno. Crea un archivo .env en el directorio raíz y define las siguientes variables:
 >PORT
 >DB_HOST
 >DB_USER
@@ -13,25 +13,25 @@
 >EMAIL_USER
 >EMAIL_PASS
 
-###La aplicación también utiliza Swagger para documentar la API. La documentación estará disponible en http://localhost:{PORT}/api-docs.
+### La aplicación también utiliza Swagger para documentar la API. La documentación estará disponible en http://localhost:{PORT}/api-docs.
 
-##Instalación
+## Instalación
 1. Clona el repositorio:
 >git clone https://github.com/DaniGom3z/backend-ComoNuevos.git
 1. Instala las dependencias:
 >npm install
 
-##Migraciones
-###Este proyecto utiliza migraciones de base de datos para gestionar los cambios en la estructura de la base de datos.
-###Ejecutar migraciones
+## Migraciones
+### Este proyecto utiliza migraciones de base de datos para gestionar los cambios en la estructura de la base de datos.
+### Ejecutar migraciones
 >npx knex migrate:up
-###Revertir migracion
+### Revertir migracion
 >npx knex migrate:down
 
-###Asegúrate de ejecutar estos comandos en el directorio raíz del proyecto.
+### Asegúrate de ejecutar estos comandos en el directorio raíz del proyecto.
 
-##Trigger
-###Ejecuta los siguientes codigos en la base de datos:
+## Trigger
+### Ejecuta los siguientes codigos en la base de datos:
 1. DELIMITER //
 CREATE TRIGGER before_insert_citas
 BEFORE INSERT ON citas
@@ -58,8 +58,8 @@ END;
 //
 DELIMITER ;
 
-##Procedimientos Almacenados
-###Ejecuta los siguientes codigos en la base de datos:
+## Procedimientos Almacenados
+### Ejecuta los siguientes codigos en la base de datos:
 1. DELIMITER //
 
 -- Crear el procedimiento almacenado
@@ -95,16 +95,16 @@ END //
 DELIMITER ;
 
 
-##Ejecución
+## Ejecución
 >nodemon index.js
-###La aplicación estará disponible en http://localhost:{PORT}.
+### La aplicación estará disponible en http://localhost:{PORT}.
 
-##Estructura del Proyecto.
+## Estructura del Proyecto.
 1. src/routes/usuarios.route.js: Contiene las rutas relacionadas con la gestión de usuarios.
 1. src/routes/administrador.route.js: Contiene las rutas relacionadas con la gestión de administradores.
 1. src/documentacion/swagger.js: Configuración para generar la documentación Swagger.
 
-##Endpoints de la API del Administrador.
+## Endpoints de la API del Administrador.
 
 1. POST /registro: Registra un nuevo administrador.
 
@@ -126,7 +126,7 @@ DELIMITER ;
 1. GET /informacion/{id_user}: Obtiene información detallada del administrador.
 1. POST /cerrarSesion: Cierra la sesión del administrador.
 
-##Endpoints de la API del Usuario.
+## Endpoints de la API del Usuario.
 
 1. GET /autos: Obtiene la lista de autos disponibles.
 
