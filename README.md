@@ -5,10 +5,10 @@
 ## Configuración
 ### Antes de ejecutar la aplicación, asegúrate de tener configuradas las variables de entorno. Crea un archivo .env en el directorio raíz y define las siguientes variables:
 >PORT
->DB_HOST
->DB_USER
->DB_PASSWORD
->DB_DATABASE
+>>DB_HOST
+>>>DB_USER
+>>>>DB_PASSWORD
+>>>>>DB_DATABASE
 >JWT_SECRET
 >EMAIL_USER
 >EMAIL_PASS
