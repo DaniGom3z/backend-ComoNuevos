@@ -1,6 +1,6 @@
 # **Api ComoNuevos**
 
-##Node 18.18.2
+## Node 18.18.2
 
 ### Este repositorio contiene una API desarrollada con Express que maneja relaciones estructuradas entre usuarios y administradores.
 
