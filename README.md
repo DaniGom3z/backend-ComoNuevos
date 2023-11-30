@@ -1,5 +1,7 @@
 # **Api ComoNuevos**
 
+## Node 18.18.2
+
 ### Este repositorio contiene una API desarrollada con Express que maneja relaciones estructuradas entre usuarios y administradores.
 
 ## Configuración
@@ -90,7 +92,7 @@
 
 
 ## Ejecución
->nodemon index.js
+>node index.js
 ### La aplicación estará disponible en http://localhost:{PORT}.
 
 ## Estructura del Proyecto.
