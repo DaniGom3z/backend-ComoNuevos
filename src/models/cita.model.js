@@ -7,125 +7,128 @@ class Cita {
   static async agregarCita(nombre, correo, dia) {
     let connection;
     try {
-      connection = await db.getConnection();
-      await connection.beginTransaction();
+        connection = await db.getConnection();
+        await connection.beginTransaction();
 
-      if (typeof correo !== "string" || !validator.isEmail(correo)) {
-        throw new Error("Correo electrónico no válido");
-      }
-
-      const result = await db.query(
-        "INSERT INTO citas (nombre, correo, dia) VALUES (?, ?, ?)",
-        [nombre, correo, dia]
-      );
-
-      console.log(result);
-      const nuevaCitaId = result.insertId || result[0]?.insertId;
-
-      console.log(nuevaCitaId);
-
-      await connection.commit();
-
-      const transporter = nodemailer.createTransport({
-        service: "Gmail",
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS,
-        },
-      });
-
-      const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: correo,
-        subject: "Confirmación de cita",
-        html: `
-          <html>
-            <head>
-              <title>Confirmación de cita</title>
-              <style>
-                body {
-                  font-family: sans-serif;
-                  font-size: 16px;
-                }
-      
-                h1 {
-                  font-size: 24px;
-                  font-weight: bold;
-                }
-      
-                .container {
-                  width: 600px;
-                  margin: 0 auto;
-                }
-      
-                .header {
-                  background-color: #E13944;
-                  color: #fff;
-                  text-align: center;
-                  padding: 20px 0;
-                }
-                
-                .content {
-                  padding: 20px;
-                  background-color: #F0F0FF;
-                }
-      
-                .footer {
-                  text-align: center;
-                  padding: 10px 0;
-                  background-color: #000000;
-                  font-size: 13px;
-                }
-                .footer .logo {
-                  color: red;
-                }
-                
-                .footer .nuevos {
-                  color: white;
-                }
-                
-              </style>
-            </head>
-            <body>
-              <header class="header">
-                <h1>Confirmación de cita</h1>
-              </header>
-              <div class="content">
-                <p>Hola, ${nombre}</p>
-                <p>Tu cita ha sido confirmada con éxito. Gracias por agendar con nosotros en la fecha: ${dia}.</p>
-                <p>Te estaremos esperando con mucho gusto.</p>
-              </div>
-              <footer class="footer">
-              <span class="logo">Como</span><span class="nuevos">Nuevos</span>
-            </footer>
-            
-            </body>
-          </html>
-        `,
-      };
-
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.log("Error al enviar el correo:", error);
-        } else {
-          console.log("Correo enviado:", info.response);
+        if (typeof correo !== "string" || !validator.isEmail(correo)) {
+            throw new Error("Correo electrónico no válido");
         }
-      });
 
-      return { id_cita: nuevaCitaId };
+        const fechaValida = await connection.query("SELECT ValidarFormatoFecha(?) AS esValida", [dia]);
+        if (fechaValida[0].esValida === 0) {
+          throw new Error("Formato de fecha no válido");
+      }
+      
+        const result = await db.query(
+            "INSERT INTO citas (nombre, correo, dia) VALUES (?, ?, ?)",
+            [nombre, correo, dia]
+        );
+
+        console.log(result);
+        const nuevaCitaId = result.insertId || result[0]?.insertId;
+
+        console.log(nuevaCitaId);
+
+        await connection.commit();
+
+        const transporter = nodemailer.createTransport({
+            service: "Gmail",
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS,
+            },
+        });
+
+        const mailOptions = {
+          from: process.env.EMAIL_USER,
+          to: correo,
+          subject: "Confirmación de cita",
+          html: `
+            <html>
+              <head>
+                <title>Confirmación de cita</title>
+                <style>
+                  body {
+                    font-family: sans-serif;
+                    font-size: 16px;
+                  }
+        
+                  h1 {
+                    font-size: 24px;
+                    font-weight: bold;
+                  }
+        
+                  .container {
+                    width: 600px;
+                    margin: 0 auto;
+                  }
+        
+                  .header {
+                    background-color: #E13944;
+                    color: #fff;
+                    text-align: center;
+                    padding: 20px 0;
+                  }
+                  
+                  .content {
+                    padding: 20px;
+                    background-color: #F0F0FF;
+                  }
+        
+                  .footer {
+                    text-align: center;
+                    padding: 10px 0;
+                    background-color: #000000;
+                    font-size: 13px;
+                  }
+                  .footer .logo {
+                    color: red;
+                  }
+                  
+                  .footer .nuevos {
+                    color: white;
+                  }
+                  
+                </style>
+              </head>
+              <body>
+                <header class="header">
+                  <h1>Confirmación de cita</h1>
+                </header>
+                <div class="content">
+                  <p>Hola, ${nombre}</p>
+                  <p>Tu cita ha sido confirmada con éxito. Gracias por agendar con nosotros en la fecha: ${dia}.</p>
+                  <p>Te estaremos esperando con mucho gusto.</p>
+                </div>
+                <footer class="footer">
+                <span class="logo">Como</span><span class="nuevos">Nuevos</span>
+              </footer>
+              
+              </body>
+            </html>
+          `,
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.log("Error al enviar el correo:", error);
+            } else {
+                console.log("Correo enviado:", info.response);
+            }
+        });
+
+        return { id_cita: nuevaCitaId };
     } catch (error) {
-      // Revertir la transacción en caso de error
-      if (connection) {
-        await connection.rollback();
-      }
-      throw new Error(error.message);
+        if (connection) {
+            await connection.rollback();
+        }
+        throw new Error(error.message);
     } finally {
-      // Asegurarse de liberar la conexión
-      if (connection) {
-        await connection.release();
-      }
+        if (connection) {
+            await connection.release();
+        }
     }
-  }
+}
 
   static async obtenerCitas(offset, limit, sort, order) {
     let connection;
@@ -177,13 +180,11 @@ class Cita {
         throw new Error("Cita no encontrada");
       }
     } catch (error) {
-      // Revertir la transacción en caso de error
       if (connection) {
         await connection.rollback();
       }
       throw new Error(error.message);
     } finally {
-      // Asegurarse de liberar la conexión
       if (connection) {
         await connection.release();
       }
@@ -208,13 +209,11 @@ class Cita {
         throw new Error("Cita no encontrada");
       }
     } catch (error) {
-      // Revertir la transacción en caso de error
       if (connection) {
         await connection.rollback();
       }
       throw new Error(error.message);
     } finally {
-      // Asegurarse de liberar la conexión
       if (connection) {
         await connection.release();
       }
@@ -239,13 +238,11 @@ class Cita {
         throw new Error("Cita no encontrada o no eliminada previamente");
       }
     } catch (error) {
-      // Revertir la transacción en caso de error
       if (connection) {
         await connection.rollback();
       }
       throw new Error(error.message);
     } finally {
-      // Asegurarse de liberar la conexión
       if (connection) {
         await connection.release();
       }
@@ -254,3 +251,5 @@ class Cita {
 }
 
 module.exports = Cita;
+
+

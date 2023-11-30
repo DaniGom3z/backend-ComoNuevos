@@ -7,26 +7,26 @@ class Administrador {
     const connection = await db.getConnection();
     try {
       await connection.beginTransaction();
-  
-      const [rows] = await connection.query(
-        "SELECT * FROM login WHERE email = ?",
+
+      const [result] = await connection.query(
+        "SELECT ValidarEmailRegistrado(?) AS emailExistente",
         [email]
       );
-  
-      if (rows.length > 0) {
+
+      if (result[0].emailExistente) {
         throw new Error("El correo electrónico ya está registrado");
       }
-  
+
       const saltRounds = 10;
       const hash = await bcrypt.hash(contraseña, saltRounds);
-  
+
       await connection.query(
         "INSERT INTO login (nombre, email, contraseña) VALUES (?, ?, ?)",
         [nombre, email, hash]
       );
-  
+
       await connection.commit();
-  
+
       return { mensaje: "Usuario creado exitosamente" };
     } catch (error) {
       await connection.rollback();

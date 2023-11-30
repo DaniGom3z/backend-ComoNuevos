@@ -28,8 +28,6 @@ const obtenerCitas = async (req, res) => {
   }
 };
 
-
-
 const eliminarCitaFisicamente = async (req, res) => {
   const { id_cita } = req.params;
 
